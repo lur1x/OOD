@@ -5,10 +5,11 @@ set(CMAKE_CXX_STANDARD 17)
 
 add_executable(GeometryEditor 
     main.cpp
-    Point.cpp
-    Circle.cpp  
-    CircleAdapter.cpp
-    ShapeFactory.cpp 
+    src/Point.cpp
+    src/Circle.cpp  
+    src/CircleAdapter.cpp
+    src/ShapeFactory.cpp 
+    
 )
 
 target_compile_definitions(GeometryEditor PRIVATE SFML_STATIC)

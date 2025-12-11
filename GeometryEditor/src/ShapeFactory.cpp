@@ -1,5 +1,5 @@
-#include "ShapeFactory.hpp"
-#include "Point.hpp"
+#include "../include/ShapeFactory.hpp"
+#include "../include/Point.hpp"
 
 std::unique_ptr<IDrawableShape> ShapeFactory::CreateShape(
     const std::string &type,

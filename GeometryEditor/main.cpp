@@ -1,5 +1,5 @@
-#include "ShapeFactory.hpp"
-#include "Point.hpp"
+#include "include/ShapeFactory.hpp"
+#include "include/Point.hpp"
 #include <SFML/Graphics.hpp>
 #include <fstream>
 #include <vector>
