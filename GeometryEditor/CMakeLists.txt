@@ -6,9 +6,8 @@ set(CMAKE_CXX_STANDARD 17)
 add_executable(GeometryEditor 
     main.cpp
     src/Point.cpp
-    src/Circle.cpp  
-    src/CircleAdapter.cpp
-    src/ShapeFactory.cpp 
+    src/SFMLCircleAdapter.cpp
+    src/ShapeParser.cpp
     
 )
 
