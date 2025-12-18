@@ -8,6 +8,11 @@ add_executable(GeometryEditor
     src/Point.cpp
     src/SFMLCircleAdapter.cpp
     src/ShapeParser.cpp
+    src/ShapeFactory.cpp
+    src/App.cpp
+    src/Canvas.cpp
+    src/SFMLTriangleAdapter.cpp
+    src/SFMLRectangleAdapter.cpp
     
 )
 

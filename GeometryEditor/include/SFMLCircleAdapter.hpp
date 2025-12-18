@@ -23,7 +23,7 @@ public:
     void SetCenter(const Point &center);
     void SetRadius(float radius);
 
-    void Draw(sf::RenderWindow &window) const override;
+    void DrawShape(sf::RenderWindow &window) const override;
 
 private:
     std::unique_ptr<sf::CircleShape> m_sfmlShape;

@@ -1,11 +1,8 @@
 #include "../include/ShapeParser.hpp"
 #include <fstream>
-#include <sstream>
 #include <iostream>
-#include <algorithm>
-#include <cctype>
 
-std::vector<std::unique_ptr<IShape>> ShapeParser::ParseFile(const std::string &filename)
+std::vector<std::unique_ptr<IShape>> ShapeParser::parseFile(const std::string &filename)
 {
     std::vector<std::unique_ptr<IShape>> shapes;
     std::ifstream file(filename);
@@ -17,18 +14,30 @@ std::vector<std::unique_ptr<IShape>> ShapeParser::ParseFile(const std::string &f
     }
 
     std::string line;
+    int lineNumber = 0;
+
     while (std::getline(file, line))
     {
-        line.erase(0, line.find_first_not_of(" \t"));
-        line.erase(line.find_last_not_of(" \t") + 1);
+        lineNumber++;
 
-        if (!line.empty())
+        try
         {
-            auto shape = ParseLine(line);
+            std::string trimmed = trim(line);
+            if (trimmed.empty())
+            {
+                continue;
+            }
+
+            auto shape = parseLine(trimmed);
             if (shape)
             {
                 shapes.push_back(std::move(shape));
             }
+        }
+        catch (const std::exception &e)
+        {
+            std::cerr << "Error parsing line " << lineNumber << ": " << e.what()
+                      << " (line: " << line << ")" << std::endl;
         }
     }
 
@@ -36,71 +45,20 @@ std::vector<std::unique_ptr<IShape>> ShapeParser::ParseFile(const std::string &f
     return shapes;
 }
 
-std::unique_ptr<IShape> ShapeParser::ParseLine(const std::string &line)
+std::unique_ptr<IShape> ShapeParser::parseLine(const std::string &line)
 {
-    if (line.find("TRIANGLE:") == 0)
-    {
-        return ParseTriangle(line.substr(9));
-    }
-    else if (line.find("RECTANGLE:") == 0)
-    {
-        return ParseRectangle(line.substr(10));
-    }
-    else if (line.find("CIRCLE:") == 0)
-    {
-        return ParseCircle(line.substr(7));
-    }
-
-    return nullptr;
+    // Используем фабрику для создания фигуры
+    return ShapeFactory::createFromString(line);
 }
 
-std::unique_ptr<IShape> ShapeParser::ParseCircle(const std::string &params)
+std::string ShapeParser::trim(const std::string &str)
 {
-    size_t cPos = params.find("C=");
-    size_t rPos = params.find("R=");
-
-    if (cPos == std::string::npos || rPos == std::string::npos)
+    size_t first = str.find_first_not_of(" \t");
+    if (first == std::string::npos)
     {
-        return nullptr;
+        return "";
     }
 
-    std::string centerStr = params.substr(cPos + 2, rPos - cPos - 3);
-    Point center = ParsePoint(centerStr);
-
-    std::string radiusStr = params.substr(rPos + 2);
-
-    radiusStr.erase(std::remove_if(radiusStr.begin(), radiusStr.end(),
-                                   [](char c)
-                                   { return !std::isdigit(c) && c != '.'; }),
-                    radiusStr.end());
-
-    float radius = std::stof(radiusStr);
-
-    return std::make_unique<SFMLCircleAdapter>(center, radius);
-}
-
-std::unique_ptr<IShape> ShapeParser::ParseRectangle(const std::string &params)
-{
-    // TODO: Реализовать для прямоугольника
-    return nullptr;
-}
-
-std::unique_ptr<IShape> ShapeParser::ParseTriangle(const std::string &params)
-{
-    // TODO: Реализовать для треугольника
-    return nullptr;
-}
-
-Point ShapeParser::ParsePoint(const std::string &pointStr)
-{
-    size_t commaPos = pointStr.find(',');
-    if (commaPos == std::string::npos)
-    {
-        return Point();
-    }
-
-    float x = std::stof(pointStr.substr(0, commaPos));
-    float y = std::stof(pointStr.substr(commaPos + 1));
-
-    return Point(x, y);
+    size_t last = str.find_last_not_of(" \t");
+    return str.substr(first, last - first + 1);
 }
