@@ -12,10 +12,5 @@ public:
     virtual std::string GetName() const = 0;
     virtual std::string ToString() const = 0;
 
-    virtual void Draw(sf::RenderWindow &window) const = 0;
-
-    // virtual void draw(ICanvas &canvas) const = 0; //  на подумать
-
-protected:
-    std::string m_name;
+    virtual void DrawShape(sf::RenderWindow &window) const = 0;
 };

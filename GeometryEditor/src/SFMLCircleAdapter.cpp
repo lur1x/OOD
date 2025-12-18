@@ -62,7 +62,7 @@ std::string SFMLCircleAdapter::GetName() const
     return "CIRCLE";
 }
 
-void SFMLCircleAdapter::Draw(sf::RenderWindow &window) const
+void SFMLCircleAdapter::DrawShape(sf::RenderWindow &window) const
 {
     if (m_sfmlShape)
     {
