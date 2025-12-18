@@ -8,9 +8,9 @@
 class ShapeParser
 {
 public:
-    static std::vector<std::unique_ptr<IShape>> parseFile(const std::string &filename);
+    static std::vector<std::unique_ptr<IShape>> ParseFile(const std::string &filename);
 
 private:
-    static std::unique_ptr<IShape> parseLine(const std::string &line);
-    static std::string trim(const std::string &str);
+    static std::unique_ptr<IShape> ParseLine(const std::string &line);
+    static std::string Trim(const std::string &str);
 };

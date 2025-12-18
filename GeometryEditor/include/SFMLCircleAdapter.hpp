@@ -30,5 +30,5 @@ private:
     Point m_center;
     float m_radius;
 
-    void UpdateShapePosition(); // на подумать
+    void UpdateShapePosition();
 };

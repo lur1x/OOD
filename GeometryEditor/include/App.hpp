@@ -9,11 +9,6 @@
 
 class Application
 {
-private:
-    std::ifstream m_input;
-    std::ofstream m_output;
-    Canvas m_canvas;
-
 public:
     Application(const std::string &inputFile, const std::string &outputFile,
                 unsigned int width, unsigned int height,
@@ -22,6 +17,10 @@ public:
     bool run();
 
 private:
-    bool processInput();
-    bool saveResults(const std::vector<std::unique_ptr<IShape>> &shapes);
+    std::ifstream m_input;
+    std::ofstream m_output;
+    Canvas m_canvas;
+
+    bool ProcessInput();
+    bool SaveResults(const std::vector<std::unique_ptr<IShape>> &shapes);
 };

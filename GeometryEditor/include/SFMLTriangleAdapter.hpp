@@ -6,12 +6,6 @@
 
 class SFMLTriangleAdapter : public IShape
 {
-private:
-    std::unique_ptr<sf::ConvexShape> m_shape;
-    Point m_p1, m_p2, m_p3;
-
-    float calculateSideLength(const Point &a, const Point &b) const;
-
 public:
     SFMLTriangleAdapter(const Point &p1, const Point &p2, const Point &p3);
 
@@ -20,4 +14,10 @@ public:
     std::string GetName() const override;
     std::string ToString() const override;
     void DrawShape(sf::RenderWindow &window) const override;
+
+private:
+    std::unique_ptr<sf::ConvexShape> m_shape;
+    Point m_p1, m_p2, m_p3;
+
+    float CalculateSideLength(const Point &a, const Point &b) const;
 };

@@ -15,7 +15,7 @@ SFMLTriangleAdapter::SFMLTriangleAdapter(const Point &p1, const Point &p2, const
     m_shape->setOutlineThickness(2.0f);
 }
 
-float SFMLTriangleAdapter::calculateSideLength(const Point &a, const Point &b) const
+float SFMLTriangleAdapter::CalculateSideLength(const Point &a, const Point &b) const
 {
     float dx = a.GetX() - b.GetX();
     float dy = a.GetY() - b.GetY();
@@ -24,10 +24,9 @@ float SFMLTriangleAdapter::calculateSideLength(const Point &a, const Point &b) c
 
 float SFMLTriangleAdapter::GetArea() const
 {
-    // Формула Герона
-    float a = calculateSideLength(m_p1, m_p2);
-    float b = calculateSideLength(m_p2, m_p3);
-    float c = calculateSideLength(m_p3, m_p1);
+    float a = CalculateSideLength(m_p1, m_p2);
+    float b = CalculateSideLength(m_p2, m_p3);
+    float c = CalculateSideLength(m_p3, m_p1);
     float p = (a + b + c) / 2.0f;
 
     return std::sqrt(p * (p - a) * (p - b) * (p - c));
@@ -35,9 +34,9 @@ float SFMLTriangleAdapter::GetArea() const
 
 float SFMLTriangleAdapter::GetPerimeter() const
 {
-    return calculateSideLength(m_p1, m_p2) +
-           calculateSideLength(m_p2, m_p3) +
-           calculateSideLength(m_p3, m_p1);
+    return CalculateSideLength(m_p1, m_p2) +
+           CalculateSideLength(m_p2, m_p3) +
+           CalculateSideLength(m_p3, m_p1);
 }
 
 std::string SFMLTriangleAdapter::GetName() const

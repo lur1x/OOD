@@ -23,7 +23,7 @@ bool Application::run()
     try
     {
         std::cout << "Loading shapes from file..." << std::endl;
-        auto shapes = ShapeParser::parseFile("input.txt");
+        auto shapes = ShapeParser::ParseFile("input.txt");
 
         if (shapes.empty())
         {
@@ -33,13 +33,10 @@ bool Application::run()
 
         std::cout << "Loaded " << shapes.size() << " shapes." << std::endl;
 
-        // Сохраняем результаты
-        if (!saveResults(shapes))
+        if (!SaveResults(shapes))
         {
             return false;
         }
-
-        // Добавляем фигуры в canvas
         for (auto &shape : shapes)
         {
             m_canvas.AddShape(std::move(shape));
@@ -57,13 +54,13 @@ bool Application::run()
     }
 }
 
-bool Application::processInput()
+bool Application::ProcessInput()
 {
     // Этот метод теперь не используется, так как парсинг делается в ShapeParser
     return true;
 }
 
-bool Application::saveResults(const std::vector<std::unique_ptr<IShape>> &shapes)
+bool Application::SaveResults(const std::vector<std::unique_ptr<IShape>> &shapes)
 {
     try
     {

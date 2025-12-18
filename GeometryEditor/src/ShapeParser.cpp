@@ -2,7 +2,7 @@
 #include <fstream>
 #include <iostream>
 
-std::vector<std::unique_ptr<IShape>> ShapeParser::parseFile(const std::string &filename)
+std::vector<std::unique_ptr<IShape>> ShapeParser::ParseFile(const std::string &filename)
 {
     std::vector<std::unique_ptr<IShape>> shapes;
     std::ifstream file(filename);
@@ -22,13 +22,13 @@ std::vector<std::unique_ptr<IShape>> ShapeParser::parseFile(const std::string &f
 
         try
         {
-            std::string trimmed = trim(line);
+            std::string trimmed = Trim(line);
             if (trimmed.empty())
             {
                 continue;
             }
 
-            auto shape = parseLine(trimmed);
+            auto shape = ParseLine(trimmed);
             if (shape)
             {
                 shapes.push_back(std::move(shape));
@@ -45,13 +45,12 @@ std::vector<std::unique_ptr<IShape>> ShapeParser::parseFile(const std::string &f
     return shapes;
 }
 
-std::unique_ptr<IShape> ShapeParser::parseLine(const std::string &line)
+std::unique_ptr<IShape> ShapeParser::ParseLine(const std::string &line)
 {
-    // Используем фабрику для создания фигуры
-    return ShapeFactory::createFromString(line);
+    return ShapeFactory::CreateFromString(line);
 }
 
-std::string ShapeParser::trim(const std::string &str)
+std::string ShapeParser::Trim(const std::string &str)
 {
     size_t first = str.find_first_not_of(" \t");
     if (first == std::string::npos)

@@ -3,12 +3,12 @@
 #include <algorithm>
 #include <cctype>
 
-std::unique_ptr<IShape> ShapeFactory::createShape(
+std::unique_ptr<IShape> ShapeFactory::CreateShape(
     const std::string &type,
     const std::vector<float> &params)
 {
 
-    std::string upperType = toUpper(type);
+    std::string upperType = ToUpper(type);
 
     if (upperType == "CIRCLE")
     {
@@ -16,7 +16,7 @@ std::unique_ptr<IShape> ShapeFactory::createShape(
         {
             throw std::invalid_argument("Circle requires 3 parameters: centerX, centerY, radius");
         }
-        return createCircle(Point(params[0], params[1]), params[2]);
+        return CreateCircle(Point(params[0], params[1]), params[2]);
     }
     else if (upperType == "RECTANGLE")
     {
@@ -24,7 +24,7 @@ std::unique_ptr<IShape> ShapeFactory::createShape(
         {
             throw std::invalid_argument("Rectangle requires 4 parameters: topLeftX, topLeftY, width, height");
         }
-        return createRectangle(Point(params[0], params[1]), params[2], params[3]);
+        return CreateRectangle(Point(params[0], params[1]), params[2], params[3]);
     }
     else if (upperType == "TRIANGLE")
     {
@@ -32,7 +32,7 @@ std::unique_ptr<IShape> ShapeFactory::createShape(
         {
             throw std::invalid_argument("Triangle requires 6 parameters: x1, y1, x2, y2, x3, y3");
         }
-        return createTriangle(
+        return CreateTriangle(
             Point(params[0], params[1]),
             Point(params[2], params[3]),
             Point(params[4], params[5]));
@@ -41,7 +41,7 @@ std::unique_ptr<IShape> ShapeFactory::createShape(
     throw std::invalid_argument("Unknown shape type: " + type);
 }
 
-std::unique_ptr<IShape> ShapeFactory::createFromString(const std::string &line)
+std::unique_ptr<IShape> ShapeFactory::CreateFromString(const std::string &line)
 {
     if (line.empty())
     {
@@ -68,39 +68,38 @@ std::unique_ptr<IShape> ShapeFactory::createFromString(const std::string &line)
     while (!paramsStr.empty() && std::isspace(paramsStr.back()))
         paramsStr.pop_back();
 
-    std::vector<float> params = parseParameters(paramsStr);
-    return createShape(type, params);
+    std::vector<float> params = ParseParameters(paramsStr);
+    return CreateShape(type, params);
 }
 
-std::unique_ptr<IShape> ShapeFactory::createCircle(const Point &center, float radius)
+std::unique_ptr<IShape> ShapeFactory::CreateCircle(const Point &center, float radius)
 {
     return std::make_unique<SFMLCircleAdapter>(center, radius);
 }
 
-std::unique_ptr<IShape> ShapeFactory::createRectangle(const Point &topLeft, float width, float height)
+std::unique_ptr<IShape> ShapeFactory::CreateRectangle(const Point &topLeft, float width, float height)
 {
     return std::make_unique<SFMLRectangleAdapter>(topLeft, width, height);
 }
 
-std::unique_ptr<IShape> ShapeFactory::createTriangle(const Point &p1, const Point &p2, const Point &p3)
+std::unique_ptr<IShape> ShapeFactory::CreateTriangle(const Point &p1, const Point &p2, const Point &p3)
 {
     return std::make_unique<SFMLTriangleAdapter>(p1, p2, p3);
 }
 
-std::string ShapeFactory::toUpper(const std::string &str)
+std::string ShapeFactory::ToUpper(const std::string &str)
 {
     std::string result = str;
     std::transform(result.begin(), result.end(), result.begin(), ::toupper);
     return result;
 }
 
-std::vector<float> ShapeFactory::parseParameters(const std::string &paramsStr)
+std::vector<float> ShapeFactory::ParseParameters(const std::string &paramsStr)
 {
     std::vector<float> params;
     std::stringstream ss(paramsStr);
     std::string token;
 
-    // Удаляем все лишние символы, оставляем только числа и разделители
     std::string cleaned;
     for (char c : paramsStr)
     {
@@ -110,12 +109,10 @@ std::vector<float> ShapeFactory::parseParameters(const std::string &paramsStr)
         }
     }
 
-    // Заменяем все разделители на пробелы
     std::replace(cleaned.begin(), cleaned.end(), ',', ' ');
     std::replace(cleaned.begin(), cleaned.end(), ';', ' ');
     std::replace(cleaned.begin(), cleaned.end(), '=', ' ');
 
-    // Парсим числа
     std::stringstream cleanedSS(cleaned);
     float num;
     while (cleanedSS >> num)
@@ -126,7 +123,7 @@ std::vector<float> ShapeFactory::parseParameters(const std::string &paramsStr)
     return params;
 }
 
-Point ShapeFactory::parsePoint(const std::string &pointStr)
+Point ShapeFactory::ParsePoint(const std::string &pointStr)
 {
     std::string cleaned = pointStr;
     std::replace(cleaned.begin(), cleaned.end(), ',', ' ');
