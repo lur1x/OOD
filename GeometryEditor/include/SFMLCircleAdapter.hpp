@@ -2,6 +2,7 @@
 #pragma once
 #include "Point.hpp"
 #include "IShape.hpp"
+#include "Constants.hpp"
 #include <memory>
 #include <cmath>
 #include <string>
@@ -13,22 +14,12 @@ public:
 
     float GetArea() const;
     float GetPerimeter() const;
-
     std::string GetName() const override;
     std::string ToString() const;
-
-    Point GetCenter() const;
-    float GetRadius() const;
-
-    void SetCenter(const Point &center);
-    void SetRadius(float radius);
-
     void DrawShape(sf::RenderWindow &window) const override;
 
 private:
-    std::unique_ptr<sf::CircleShape> m_sfmlShape;
+    std::unique_ptr<sf::CircleShape> m_shape;
     Point m_center;
     float m_radius;
-
-    void UpdateShapePosition();
 };

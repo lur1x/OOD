@@ -1,6 +1,7 @@
 #pragma once
-#include "IShape.hpp"
 #include "Point.hpp"
+#include "IShape.hpp"
+#include "Constants.hpp"
 #include <memory>
 #include <cmath>
 
@@ -18,6 +19,4 @@ public:
 private:
     std::unique_ptr<sf::ConvexShape> m_shape;
     Point m_p1, m_p2, m_p3;
-
-    float CalculateSideLength(const Point &a, const Point &b) const;
 };
