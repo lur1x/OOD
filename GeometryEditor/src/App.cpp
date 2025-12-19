@@ -18,7 +18,7 @@ Application::Application(const std::string &inputFile, const std::string &output
     }
 }
 
-bool Application::run()
+bool Application::Run()
 {
     try
     {
@@ -33,16 +33,13 @@ bool Application::run()
 
         std::cout << "Loaded " << shapes.size() << " shapes." << std::endl;
 
-        if (!SaveResults(shapes))
-        {
-            return false;
-        }
         for (auto &shape : shapes)
         {
+            m_output << shape->ToString() << std::endl;
             m_canvas.AddShape(std::move(shape));
         }
 
-        std::cout << "Starting visualization. Press ESC to exit." << std::endl;
+        std::cout << "Starting visualization" << std::endl;
         m_canvas.Draw();
 
         return true;
@@ -50,31 +47,6 @@ bool Application::run()
     catch (const std::exception &e)
     {
         std::cerr << "Error: " << e.what() << std::endl;
-        return false;
-    }
-}
-
-bool Application::ProcessInput()
-{
-    // Этот метод теперь не используется, так как парсинг делается в ShapeParser
-    return true;
-}
-
-bool Application::SaveResults(const std::vector<std::unique_ptr<IShape>> &shapes)
-{
-    try
-    {
-        m_output << "=== Geometric Shapes Calculation Results ===\n\n";
-        for (const auto &shape : shapes)
-        {
-            m_output << shape->ToString() << std::endl;
-        }
-        std::cout << "Results saved to output file." << std::endl;
-        return true;
-    }
-    catch (const std::exception &e)
-    {
-        std::cerr << "Error saving results: " << e.what() << std::endl;
         return false;
     }
 }

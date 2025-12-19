@@ -26,7 +26,7 @@ public:
     void DrawShape(sf::RenderWindow &window) const override;
 
 private:
-    std::unique_ptr<sf::CircleShape> m_sfmlShape;
+    std::unique_ptr<sf::CircleShape> m_shape;
     Point m_center;
     float m_radius;
 

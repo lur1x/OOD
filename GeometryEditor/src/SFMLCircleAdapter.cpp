@@ -5,12 +5,12 @@ SFMLCircleAdapter::SFMLCircleAdapter(const Point &center, float radius)
     : m_center(center), m_radius(radius)
 {
 
-    m_sfmlShape = std::make_unique<sf::CircleShape>(radius);
+    m_shape = std::make_unique<sf::CircleShape>(radius);
     UpdateShapePosition();
 
-    m_sfmlShape->setFillColor(sf::Color::Green);
-    m_sfmlShape->setOutlineColor(sf::Color::Black);
-    m_sfmlShape->setOutlineThickness(2.0f);
+    m_shape->setFillColor(sf::Color::Green);
+    m_shape->setOutlineColor(sf::Color::Black);
+    m_shape->setOutlineThickness(2.0f);
 }
 
 float SFMLCircleAdapter::GetArea() const
@@ -50,9 +50,9 @@ void SFMLCircleAdapter::SetCenter(const Point &center)
 void SFMLCircleAdapter::SetRadius(float radius)
 {
     m_radius = radius;
-    if (m_sfmlShape)
+    if (m_shape)
     {
-        m_sfmlShape->setRadius(radius);
+        m_shape->setRadius(radius);
         UpdateShapePosition();
     }
 }
@@ -64,18 +64,15 @@ std::string SFMLCircleAdapter::GetName() const
 
 void SFMLCircleAdapter::DrawShape(sf::RenderWindow &window) const
 {
-    if (m_sfmlShape)
-    {
-        window.draw(*m_sfmlShape);
-    }
+    window.draw(*m_shape);
 }
 
 void SFMLCircleAdapter::UpdateShapePosition()
 {
-    if (m_sfmlShape)
+    if (m_shape)
     {
 
-        m_sfmlShape->setPosition(
+        m_shape->setPosition(
             {m_center.GetX() - m_radius,
              m_center.GetY() - m_radius});
     }

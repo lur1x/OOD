@@ -1,3 +1,0 @@
-=== Geometric Shapes Calculation Results ===
-
-CIRCLE: P=3141.59; S=785398.19

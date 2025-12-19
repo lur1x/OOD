@@ -2,6 +2,6 @@
 
 int main()
 {
-    Application app("./input.txt", "./output.txt", 800, 600, "Geometric Shapes");
-    return app.run() ? 0 : 1;
+    Application app("./input.txt", "./output.txt", 800, 600, "Geometric Editor");
+    return app.Run() ? 0 : 1;
 }
