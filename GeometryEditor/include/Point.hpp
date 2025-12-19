@@ -9,9 +9,6 @@ public:
     float GetX() const;
     float GetY() const;
 
-    void SetX(float newX);
-    void SetY(float newY);
-
     float Distance(const Point &other) const;
 
 private:

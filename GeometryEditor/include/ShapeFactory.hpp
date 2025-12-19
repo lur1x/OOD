@@ -1,9 +1,9 @@
 #pragma once
 #include "IShape.hpp"
+#include "Constants.hpp"
 #include "SFMLCircleAdapter.hpp"
 #include "SFMLRectangleAdapter.hpp"
 #include "SFMLTriangleAdapter.hpp"
-#include "Constants.hpp"
 #include <memory>
 #include <string>
 #include <vector>

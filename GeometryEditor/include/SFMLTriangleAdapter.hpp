@@ -18,6 +18,4 @@ public:
 private:
     std::unique_ptr<sf::ConvexShape> m_shape;
     Point m_p1, m_p2, m_p3;
-
-    float CalculateSideLength(const Point &a, const Point &b) const;
 };

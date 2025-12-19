@@ -15,18 +15,11 @@ SFMLTriangleAdapter::SFMLTriangleAdapter(const Point &p1, const Point &p2, const
     m_shape->setOutlineThickness(2.0f);
 }
 
-float SFMLTriangleAdapter::CalculateSideLength(const Point &a, const Point &b) const
-{
-    float dx = a.GetX() - b.GetX();
-    float dy = a.GetY() - b.GetY();
-    return std::sqrt(dx * dx + dy * dy);
-}
-
 float SFMLTriangleAdapter::GetArea() const
 {
-    float a = CalculateSideLength(m_p1, m_p2);
-    float b = CalculateSideLength(m_p2, m_p3);
-    float c = CalculateSideLength(m_p3, m_p1);
+    float a = m_p1.Distance(m_p2);
+    float b = m_p2.Distance(m_p3);
+    float c = m_p3.Distance(m_p1);
     float p = (a + b + c) / 2.0f;
 
     return std::sqrt(p * (p - a) * (p - b) * (p - c));
@@ -34,9 +27,9 @@ float SFMLTriangleAdapter::GetArea() const
 
 float SFMLTriangleAdapter::GetPerimeter() const
 {
-    return CalculateSideLength(m_p1, m_p2) +
-           CalculateSideLength(m_p2, m_p3) +
-           CalculateSideLength(m_p3, m_p1);
+    return m_p1.Distance(m_p2);
+    +m_p2.Distance(m_p3) +
+        m_p3.Distance(m_p1);
 }
 
 std::string SFMLTriangleAdapter::GetName() const

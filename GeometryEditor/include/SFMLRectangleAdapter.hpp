@@ -1,6 +1,6 @@
 #pragma once
-#include "IShape.hpp"
 #include "Point.hpp"
+#include "IShape.hpp"
 #include <memory>
 #include <cmath>
 
