@@ -2,6 +2,7 @@
 #pragma once
 #include "Point.hpp"
 #include "IShape.hpp"
+#include "Constants.hpp"
 #include <memory>
 #include <cmath>
 #include <string>

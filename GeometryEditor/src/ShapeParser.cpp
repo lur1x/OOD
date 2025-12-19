@@ -1,6 +1,6 @@
 #include "../include/ShapeParser.hpp"
 #include <fstream>
-#include <iostream>
+
 std::vector<std::unique_ptr<IShape>> ShapeParser::ParseFile(const std::string &filename)
 {
     std::vector<std::unique_ptr<IShape>> shapes;
@@ -13,7 +13,7 @@ std::vector<std::unique_ptr<IShape>> ShapeParser::ParseFile(const std::string &f
 
     while (std::getline(file, line))
     {
-        size_t colonPos = line.find(':');
+        size_t colonPos = line.find(output::COLON);
         if (colonPos == std::string::npos)
             continue;
 

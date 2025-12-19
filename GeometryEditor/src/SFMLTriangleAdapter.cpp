@@ -34,14 +34,14 @@ float SFMLTriangleAdapter::GetPerimeter() const
 
 std::string SFMLTriangleAdapter::GetName() const
 {
-    return "TRIANGLE";
+    return output::TRIANGLE;
 }
 
 std::string SFMLTriangleAdapter::ToString() const
 {
     std::ostringstream oss;
-    oss << GetName() << ": P=" << std::fixed << std::setprecision(2) << GetPerimeter()
-        << "; S=" << std::fixed << std::setprecision(2) << GetArea();
+    oss << GetName() << output::COLON + output::PERIMETER << std::fixed << std::setprecision(2) << GetPerimeter()
+        << output::SEPARATOR + output::AREA << std::fixed << std::setprecision(2) << GetArea();
     return oss.str();
 }
 

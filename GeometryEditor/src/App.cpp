@@ -9,12 +9,12 @@ Application::Application(const std::string &inputFile, const std::string &output
 
     if (!m_input.is_open())
     {
-        throw std::runtime_error("Cannot open input file: " + inputFile);
+        throw std::runtime_error(messages::CANNOT_OPEN_INPUT_FILE + inputFile);
     }
 
     if (!m_output.is_open())
     {
-        throw std::runtime_error("Cannot open output file: " + outputFile);
+        throw std::runtime_error(messages::CANNOT_OPEN_OUTPUT_FILE + outputFile);
     }
 }
 
@@ -22,16 +22,16 @@ bool Application::Run()
 {
     try
     {
-        std::cout << "Loading shapes from file..." << std::endl;
-        auto shapes = ShapeParser::ParseFile("input.txt");
+        std::cout << messages::LOADING_SHAPES << std::endl;
+        auto shapes = ShapeParser::ParseFile("./input.txt");
 
         if (shapes.empty())
         {
-            std::cout << "No shapes loaded. Exiting." << std::endl;
+            std::cout << messages::NO_SHAPES_LOADED << std::endl;
             return false;
         }
 
-        std::cout << "Loaded " << shapes.size() << " shapes." << std::endl;
+        std::cout << messages::LOADED_SHAPES_PREFIX << shapes.size() << messages::LOADED_SHAPES_SUFFIX << std::endl;
 
         for (auto &shape : shapes)
         {
@@ -39,14 +39,14 @@ bool Application::Run()
             m_canvas.AddShape(std::move(shape));
         }
 
-        std::cout << "Starting visualization" << std::endl;
+        std::cout << messages::STARTING_VISUALIZATION << std::endl;
         m_canvas.Draw();
 
         return true;
     }
     catch (const std::exception &e)
     {
-        std::cerr << "Error: " << e.what() << std::endl;
+        std::cerr << messages::ERROR_PREFIX << e.what() << std::endl;
         return false;
     }
 }
