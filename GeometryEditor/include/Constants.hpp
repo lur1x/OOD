@@ -11,8 +11,8 @@ namespace window
 
 namespace input
 {
-    const std::string INPUT_FILENAME = "./input.txt";
-    const std::string OUTPUT_FILENAME = "./output.txt";
+    const std::string INPUT_FILENAME = "../input.txt";
+    const std::string OUTPUT_FILENAME = "../output.txt";
 
     const std::string RECT = "RECTANGLE";
     const std::string CIRCLE = "CIRCLE";
