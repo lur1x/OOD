@@ -23,7 +23,7 @@ bool Application::Run()
     try
     {
         std::cout << messages::LOADING_SHAPES << std::endl;
-        auto shapes = ShapeParser::ParseFile("./input.txt");
+        auto shapes = ShapeParser::ParseFile(m_input);
 
         if (shapes.empty())
         {

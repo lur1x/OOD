@@ -9,5 +9,5 @@
 class ShapeParser
 {
 public:
-    static std::vector<std::unique_ptr<IShape>> ParseFile(const std::string &filename);
+    static std::vector<std::unique_ptr<IShape>> ParseFile(std::ifstream &filename);
 };
