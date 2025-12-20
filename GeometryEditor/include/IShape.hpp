@@ -11,6 +11,4 @@ public:
     virtual float GetPerimeter() const = 0;
     virtual std::string GetName() const = 0;
     virtual std::string ToString() const = 0;
-
-    virtual void DrawShape(sf::RenderWindow &window) const = 0;
 };

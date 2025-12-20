@@ -1,9 +1,9 @@
 #include "../include/ShapeParser.hpp"
 #include <fstream>
 
-std::vector<std::unique_ptr<IShape>> ShapeParser::ParseFile(std::ifstream &file)
+std::vector<std::shared_ptr<IDrawableShape>> ShapeParser::ParseFile(std::ifstream &file)
 {
-    std::vector<std::unique_ptr<IShape>> shapes;
+    std::vector<std::shared_ptr<IDrawableShape>> shapes;
 
     if (!file.is_open())
         return shapes;

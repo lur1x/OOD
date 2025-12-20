@@ -3,7 +3,7 @@
 #include <vector>
 #include <memory>
 #include <string>
-#include "IShape.hpp"
+#include "IDrawableShape.hpp"
 
 class Canvas
 {
@@ -12,12 +12,12 @@ public:
 
     bool IsOpen() const;
     void Draw();
-    void AddShape(std::unique_ptr<IShape> shape);
+    void AddShape(std::shared_ptr<IDrawableShape> shape);
     void ClearShapes();
 
 private:
     sf::RenderWindow m_window;
-    std::vector<std::unique_ptr<IShape>> m_shapes;
+    std::vector<std::shared_ptr<IDrawableShape>> m_shapes;
 
     bool HandleEvents();
     bool Render();

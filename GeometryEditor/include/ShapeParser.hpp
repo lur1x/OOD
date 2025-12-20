@@ -1,5 +1,5 @@
 #pragma once
-#include "IShape.hpp"
+#include "IDrawableShape.hpp"
 #include "Constants.hpp"
 #include "ShapeFactory.hpp"
 #include <memory>
@@ -9,5 +9,5 @@
 class ShapeParser
 {
 public:
-    static std::vector<std::unique_ptr<IShape>> ParseFile(std::ifstream &filename);
+    static std::vector<std::shared_ptr<IDrawableShape>> ParseFile(std::ifstream &filename);
 };

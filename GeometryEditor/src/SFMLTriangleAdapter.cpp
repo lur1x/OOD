@@ -6,7 +6,7 @@ SFMLTriangleAdapter::SFMLTriangleAdapter(const Point &p1, const Point &p2, const
     : m_p1(p1), m_p2(p2), m_p3(p3)
 {
 
-    m_shape = std::make_unique<sf::ConvexShape>(3);
+    m_shape = std::make_shared<sf::ConvexShape>(3);
     m_shape->setPoint(0, sf::Vector2f(p1.GetX(), p1.GetY()));
     m_shape->setPoint(1, sf::Vector2f(p2.GetX(), p2.GetY()));
     m_shape->setPoint(2, sf::Vector2f(p3.GetX(), p3.GetY()));
@@ -45,7 +45,7 @@ std::string SFMLTriangleAdapter::ToString() const
     return oss.str();
 }
 
-void SFMLTriangleAdapter::DrawShape(sf::RenderWindow &window) const
+std::shared_ptr<sf::Shape> SFMLTriangleAdapter::GetShape() const
 {
-    window.draw(*m_shape);
+    return m_shape;
 }
