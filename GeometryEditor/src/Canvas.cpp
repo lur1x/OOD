@@ -1,5 +1,4 @@
 #include "../include/Canvas.hpp"
-#include <iostream>
 
 Canvas::Canvas(unsigned int width, unsigned int height, const std::string &title)
     : m_window(sf::VideoMode({width, height}), title)

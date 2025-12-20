@@ -18,6 +18,6 @@ public:
     std::shared_ptr<sf::Shape> GetShape() const override;
 
 private:
-    std::shared_ptr<sf::ConvexShape> m_shape;
+    std::shared_ptr<sf::ConvexShape> m_triangle;
     Point m_p1, m_p2, m_p3;
 };

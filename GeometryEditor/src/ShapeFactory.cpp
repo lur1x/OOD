@@ -1,7 +1,4 @@
 #include "../include/ShapeFactory.hpp"
-#include <sstream>
-#include <algorithm>
-#include <cctype>
 
 std::shared_ptr<IDrawableShape> ShapeFactory::CreateShape(
     const SHAPES_TYPE &type,

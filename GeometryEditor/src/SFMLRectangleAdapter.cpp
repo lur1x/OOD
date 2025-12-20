@@ -1,16 +1,14 @@
 #include "../include/SFMLRectangleAdapter.hpp"
-#include <sstream>
-#include <iomanip>
 
 SFMLRectangleAdapter::SFMLRectangleAdapter(const Point &topLeft, float width, float height)
     : m_topLeft(topLeft), m_width(width), m_height(height)
 {
 
-    m_shape = std::make_shared<sf::RectangleShape>(sf::Vector2f(width, height));
-    m_shape->setPosition({topLeft.GetX(), topLeft.GetY()});
-    m_shape->setFillColor(sf::Color::Blue);
-    m_shape->setOutlineColor(sf::Color::Black);
-    m_shape->setOutlineThickness(2.0f);
+    m_rectangle = std::make_shared<sf::RectangleShape>(sf::Vector2f(width, height));
+    m_rectangle->setPosition({topLeft.GetX(), topLeft.GetY()});
+    m_rectangle->setFillColor(sf::Color::Blue);
+    m_rectangle->setOutlineColor(sf::Color::Black);
+    m_rectangle->setOutlineThickness(2.0f);
 }
 
 float SFMLRectangleAdapter::GetArea() const
@@ -25,7 +23,7 @@ float SFMLRectangleAdapter::GetPerimeter() const
 
 std::string SFMLRectangleAdapter::GetName() const
 {
-    return output::RECT;
+    return output::RECTANGLE;
 }
 
 std::string SFMLRectangleAdapter::ToString() const
@@ -38,5 +36,5 @@ std::string SFMLRectangleAdapter::ToString() const
 
 std::shared_ptr<sf::Shape> SFMLRectangleAdapter::GetShape() const
 {
-    return m_shape;
+    return m_rectangle;
 }

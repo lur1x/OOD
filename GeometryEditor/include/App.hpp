@@ -1,8 +1,5 @@
 #pragma once
-#include <iostream>
 #include <fstream>
-#include <memory>
-#include <string>
 #include "Canvas.hpp"
 #include "ShapeParser.hpp"
 #include "ShapeFactory.hpp"

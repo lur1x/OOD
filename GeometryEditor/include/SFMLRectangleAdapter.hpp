@@ -14,10 +14,11 @@ public:
     float GetPerimeter() const override;
     std::string GetName() const override;
     std::string ToString() const override;
+
     std::shared_ptr<sf::Shape> GetShape() const override;
 
 private:
-    std::shared_ptr<sf::RectangleShape> m_shape;
+    std::shared_ptr<sf::RectangleShape> m_rectangle;
     Point m_topLeft;
     float m_width;
     float m_height;

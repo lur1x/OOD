@@ -1,18 +1,17 @@
 #include "../include/SFMLCircleAdapter.hpp"
-#include <iostream>
 
 SFMLCircleAdapter::SFMLCircleAdapter(const Point &center, float radius)
     : m_center(center), m_radius(radius)
 {
 
-    m_shape = std::make_shared<sf::CircleShape>(radius);
-    m_shape->setPosition(
+    m_circle = std::make_shared<sf::CircleShape>(radius);
+    m_circle->setPosition(
         {m_center.GetX() - m_radius,
          m_center.GetY() - m_radius});
 
-    m_shape->setFillColor(sf::Color::Green);
-    m_shape->setOutlineColor(sf::Color::Black);
-    m_shape->setOutlineThickness(2.0f);
+    m_circle->setFillColor(sf::Color::Green);
+    m_circle->setOutlineColor(sf::Color::Black);
+    m_circle->setOutlineThickness(2.0f);
 }
 
 float SFMLCircleAdapter::GetArea() const
@@ -40,5 +39,5 @@ std::string SFMLCircleAdapter::GetName() const
 
 std::shared_ptr<sf::Shape> SFMLCircleAdapter::GetShape() const
 {
-    return m_shape;
+    return m_circle;
 }
