@@ -1,18 +1,16 @@
 #include "../include/SFMLTriangleAdapter.hpp"
-#include <sstream>
-#include <iomanip>
 
 SFMLTriangleAdapter::SFMLTriangleAdapter(const Point &p1, const Point &p2, const Point &p3)
     : m_p1(p1), m_p2(p2), m_p3(p3)
 {
 
-    m_shape = std::make_shared<sf::ConvexShape>(3);
-    m_shape->setPoint(0, sf::Vector2f(p1.GetX(), p1.GetY()));
-    m_shape->setPoint(1, sf::Vector2f(p2.GetX(), p2.GetY()));
-    m_shape->setPoint(2, sf::Vector2f(p3.GetX(), p3.GetY()));
-    m_shape->setFillColor(sf::Color::Red);
-    m_shape->setOutlineColor(sf::Color::Black);
-    m_shape->setOutlineThickness(2.0f);
+    m_triangle = std::make_shared<sf::ConvexShape>(3);
+    m_triangle->setPoint(0, sf::Vector2f(p1.GetX(), p1.GetY()));
+    m_triangle->setPoint(1, sf::Vector2f(p2.GetX(), p2.GetY()));
+    m_triangle->setPoint(2, sf::Vector2f(p3.GetX(), p3.GetY()));
+    m_triangle->setFillColor(sf::Color::Red);
+    m_triangle->setOutlineColor(sf::Color::Black);
+    m_triangle->setOutlineThickness(2.0f);
 }
 
 float SFMLTriangleAdapter::GetArea() const
@@ -47,5 +45,5 @@ std::string SFMLTriangleAdapter::ToString() const
 
 std::shared_ptr<sf::Shape> SFMLTriangleAdapter::GetShape() const
 {
-    return m_shape;
+    return m_triangle;
 }

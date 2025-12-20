@@ -1,5 +1,4 @@
 #include "../include/ShapeParser.hpp"
-#include <fstream>
 
 std::vector<std::shared_ptr<IDrawableShape>> ShapeParser::ParseFile(std::ifstream &file)
 {

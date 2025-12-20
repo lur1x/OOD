@@ -2,9 +2,7 @@
 #include "IDrawableShape.hpp"
 #include "Constants.hpp"
 #include "ShapeFactory.hpp"
-#include <memory>
-#include <vector>
-#include <string>
+#include <fstream>
 
 class ShapeParser
 {

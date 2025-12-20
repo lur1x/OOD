@@ -14,7 +14,7 @@ namespace input
     const std::string INPUT_FILENAME = "../input.txt";
     const std::string OUTPUT_FILENAME = "../output.txt";
 
-    const std::string RECT = "RECTANGLE";
+    const std::string RECTANGLE = "RECTANGLE";
     const std::string CIRCLE = "CIRCLE";
     const std::string TRIANGLE = "TRIANGLE";
 }
@@ -26,7 +26,7 @@ namespace output
     const std::string AREA = "S=";
     const std::string SEPARATOR = "; ";
 
-    const std::string RECT = "RECTANGLE";
+    const std::string RECTANGLE = "RECTANGLE";
     const std::string CIRCLE = "CIRCLE";
     const std::string TRIANGLE = "TRIANGLE";
 }
@@ -56,6 +56,6 @@ enum class SHAPES_TYPE
 
 const std::unordered_map<std::string, SHAPES_TYPE> SHAPES_MAP =
     {
-        {input::RECT, SHAPES_TYPE::RECTANGLE_T},
+        {input::RECTANGLE, SHAPES_TYPE::RECTANGLE_T},
         {input::CIRCLE, SHAPES_TYPE::CIRCLE_T},
         {input::TRIANGLE, SHAPES_TYPE::TRIANGLE_T}};
