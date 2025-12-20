@@ -5,9 +5,6 @@ std::vector<std::shared_ptr<IDrawableShape>> ShapeParser::ParseFile(std::ifstrea
 {
     std::vector<std::shared_ptr<IDrawableShape>> shapes;
 
-    if (!file.is_open())
-        return shapes;
-
     std::string line;
 
     while (std::getline(file, line))

@@ -38,10 +38,13 @@ namespace messages
     const std::string LOADED_SHAPES_PREFIX = "Loaded ";
     const std::string LOADED_SHAPES_SUFFIX = " shapes.";
     const std::string STARTING_VISUALIZATION = "Starting visualization";
-    const std::string ERROR_PREFIX = "Error: ";
 
+    const std::string ERROR_PREFIX = "Error: ";
     const std::string CANNOT_OPEN_INPUT_FILE = "Cannot open input file: ";
     const std::string CANNOT_OPEN_OUTPUT_FILE = "Cannot open output file: ";
+    const std::string CANVAS_INITIALIZATION_FAILED = "Failed to initialize canvas (SFML window).";
+    const std::string FILES_CLOSED_UNEXPECTEDLY = "Input or output files are closed unexpectedly.";
+
 }
 
 enum class SHAPES_TYPE
