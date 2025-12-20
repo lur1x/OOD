@@ -1,25 +1,25 @@
 #define _USE_MATH_DEFINES
 #pragma once
 #include "Point.hpp"
-#include "IShape.hpp"
+#include "IDrawableShape.hpp"
 #include "Constants.hpp"
 #include <memory>
 #include <cmath>
 #include <string>
 
-class SFMLCircleAdapter : public IShape
+class SFMLCircleAdapter : public IDrawableShape
 {
 public:
     SFMLCircleAdapter(const Point &center, float radius);
 
-    float GetArea() const;
-    float GetPerimeter() const;
+    float GetArea() const override;
+    float GetPerimeter() const override;
     std::string GetName() const override;
-    std::string ToString() const;
-    void DrawShape(sf::RenderWindow &window) const override;
+    std::string ToString() const override;
+    std::shared_ptr<sf::Shape> GetShape() const override;
 
 private:
-    std::unique_ptr<sf::CircleShape> m_shape;
+    std::shared_ptr<sf::CircleShape> m_shape;
     Point m_center;
     float m_radius;
 };

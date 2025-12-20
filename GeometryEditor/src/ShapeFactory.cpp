@@ -3,7 +3,7 @@
 #include <algorithm>
 #include <cctype>
 
-std::unique_ptr<IShape> ShapeFactory::CreateShape(
+std::shared_ptr<IDrawableShape> ShapeFactory::CreateShape(
     const SHAPES_TYPE &type,
     const std::vector<float> &params)
 {
@@ -24,17 +24,17 @@ std::unique_ptr<IShape> ShapeFactory::CreateShape(
     }
 }
 
-std::unique_ptr<IShape> ShapeFactory::CreateCircle(const Point &center, float radius)
+std::shared_ptr<IDrawableShape> ShapeFactory::CreateCircle(const Point &center, float radius)
 {
-    return std::make_unique<SFMLCircleAdapter>(center, radius);
+    return std::make_shared<SFMLCircleAdapter>(center, radius);
 }
 
-std::unique_ptr<IShape> ShapeFactory::CreateRectangle(const Point &topLeft, float width, float height)
+std::shared_ptr<IDrawableShape> ShapeFactory::CreateRectangle(const Point &topLeft, float width, float height)
 {
-    return std::make_unique<SFMLRectangleAdapter>(topLeft, width, height);
+    return std::make_shared<SFMLRectangleAdapter>(topLeft, width, height);
 }
 
-std::unique_ptr<IShape> ShapeFactory::CreateTriangle(const Point &p1, const Point &p2, const Point &p3)
+std::shared_ptr<IDrawableShape> ShapeFactory::CreateTriangle(const Point &p1, const Point &p2, const Point &p3)
 {
-    return std::make_unique<SFMLTriangleAdapter>(p1, p2, p3);
+    return std::make_shared<SFMLTriangleAdapter>(p1, p2, p3);
 }

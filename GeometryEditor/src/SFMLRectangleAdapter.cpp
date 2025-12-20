@@ -6,7 +6,7 @@ SFMLRectangleAdapter::SFMLRectangleAdapter(const Point &topLeft, float width, fl
     : m_topLeft(topLeft), m_width(width), m_height(height)
 {
 
-    m_shape = std::make_unique<sf::RectangleShape>(sf::Vector2f(width, height));
+    m_shape = std::make_shared<sf::RectangleShape>(sf::Vector2f(width, height));
     m_shape->setPosition({topLeft.GetX(), topLeft.GetY()});
     m_shape->setFillColor(sf::Color::Blue);
     m_shape->setOutlineColor(sf::Color::Black);
@@ -36,7 +36,7 @@ std::string SFMLRectangleAdapter::ToString() const
     return oss.str();
 }
 
-void SFMLRectangleAdapter::DrawShape(sf::RenderWindow &window) const
+std::shared_ptr<sf::Shape> SFMLRectangleAdapter::GetShape() const
 {
-    window.draw(*m_shape);
+    return m_shape;
 }

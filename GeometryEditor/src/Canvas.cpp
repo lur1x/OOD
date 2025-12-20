@@ -23,7 +23,7 @@ void Canvas::Draw()
     }
 }
 
-void Canvas::AddShape(std::unique_ptr<IShape> shape)
+void Canvas::AddShape(std::shared_ptr<IDrawableShape> shape)
 {
     m_shapes.push_back(std::move(shape));
 }
@@ -52,7 +52,7 @@ bool Canvas::Render()
 
     for (const auto &shape : m_shapes)
     {
-        shape->DrawShape(m_window);
+        m_window.draw(*shape->GetShape());
     }
 
     m_window.display();

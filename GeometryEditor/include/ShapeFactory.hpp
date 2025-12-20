@@ -1,5 +1,5 @@
 #pragma once
-#include "IShape.hpp"
+#include "IDrawableShape.hpp"
 #include "Constants.hpp"
 #include "SFMLCircleAdapter.hpp"
 #include "SFMLRectangleAdapter.hpp"
@@ -12,12 +12,12 @@
 class ShapeFactory
 {
 public:
-    static std::unique_ptr<IShape> CreateShape(
+    static std::shared_ptr<IDrawableShape> CreateShape(
         const SHAPES_TYPE &type,
         const std::vector<float> &params);
 
 private:
-    static std::unique_ptr<IShape> CreateCircle(const Point &center, float radius);
-    static std::unique_ptr<IShape> CreateRectangle(const Point &topLeft, float width, float height);
-    static std::unique_ptr<IShape> CreateTriangle(const Point &p1, const Point &p2, const Point &p3);
+    static std::shared_ptr<IDrawableShape> CreateCircle(const Point &center, float radius);
+    static std::shared_ptr<IDrawableShape> CreateRectangle(const Point &topLeft, float width, float height);
+    static std::shared_ptr<IDrawableShape> CreateTriangle(const Point &p1, const Point &p2, const Point &p3);
 };
