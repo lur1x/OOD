@@ -1,8 +1,13 @@
 #pragma once
 #include <SFML/Graphics.hpp>
 #include "IDrawableShape.hpp"
-
 #include "CompositeShape.hpp"
+
+#include "SFMLCircleAdapter.hpp"
+#include "SFMLRectangleAdapter.hpp"
+#include "SFMLTriangleAdapter.hpp"
+
+#include "Constants.hpp"
 class Canvas
 {
 public:
@@ -30,6 +35,12 @@ private:
     void HandleDragEvent();
     void GroupSelectedShapes();
     void UngroupSelectedShapes();
+
+    void AddNewShape(const sf::Event &event);
+    void ChangeShape(const sf::Event &event);
+
+    sf::Color GetNextColor(const sf::Color &colorShape) const;
+    SHAPE_COLORS GetEnumFromColor(const sf::Color &color) const;
 
     bool Render();
 };

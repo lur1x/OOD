@@ -80,3 +80,26 @@ const std::unordered_map<std::string, SHAPES_TYPE> SHAPES_MAP =
         {input::RECTANGLE, SHAPES_TYPE::RECTANGLE_T},
         {input::CIRCLE, SHAPES_TYPE::CIRCLE_T},
         {input::TRIANGLE, SHAPES_TYPE::TRIANGLE_T}};
+
+enum class SHAPE_COLORS
+{
+    RED,
+    BLUE,
+    BLACK,
+    WHITE,
+    YELLOW,
+    TRANSPARENT
+
+};
+
+const int SHAPE_COLORS_SIZE = 6;
+
+const std::unordered_map<SHAPE_COLORS, sf::Color> COLORS_MAP =
+    {
+        {SHAPE_COLORS::RED, sf::Color::Red},
+        {SHAPE_COLORS::BLUE, sf::Color::Blue},
+        {SHAPE_COLORS::BLACK, sf::Color::Black},
+        {SHAPE_COLORS::WHITE, sf::Color::White},
+        {SHAPE_COLORS::YELLOW, sf::Color::Yellow},
+        {SHAPE_COLORS::TRANSPARENT, sf::Color::Transparent},
+};
