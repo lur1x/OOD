@@ -6,7 +6,8 @@
 #include "SFMLCircleAdapter.hpp"
 #include "SFMLRectangleAdapter.hpp"
 #include "SFMLTriangleAdapter.hpp"
-
+#include "ICommand.hpp"
+#include "ITool.hpp"
 #include "Constants.hpp"
 class Canvas
 {
@@ -18,6 +19,11 @@ public:
     void AddShape(std::shared_ptr<IDrawableShape> shape);
     void ClearShapes();
 
+    sf::Vector2f GetMousePosition() const;
+    std::shared_ptr<IDrawableShape> GetShapeByHit(const sf::Vector2f &point) const;
+    void ExecuteCommand(std::unique_ptr<ICommand> cmd);
+    void SetTool(std::unique_ptr<ITool> tool);
+
 private:
     sf::RenderWindow m_window;
     std::vector<std::shared_ptr<IDrawableShape>> m_shapes;
@@ -26,6 +32,8 @@ private:
     bool m_dragging = false;
 
     sf::Vector2f m_lastMousePos;
+    std::unique_ptr<ITool> m_tool;
+
     std::shared_ptr<IDrawableShape> HitTest(const sf::Vector2f &point);
 
     bool HandleEvents();
@@ -38,9 +46,6 @@ private:
 
     void AddNewShape(const sf::Event &event);
     void ChangeShape(const sf::Event &event);
-
-    sf::Color GetNextColor(const sf::Color &colorShape) const;
-    SHAPE_COLORS GetEnumFromColor(const sf::Color &color) const;
 
     bool Render();
 };

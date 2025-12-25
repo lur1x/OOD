@@ -1,5 +1,8 @@
 #include "../include/Canvas.hpp"
 #include "../include/CompositeShape.hpp"
+#include "../include/ChangeColorShapeState.hpp"
+#include "../include/AddShapeState.hpp"
+#include "../include/ChangeThicknessShapeState.hpp"
 #include <algorithm>
 
 Canvas::Canvas(unsigned int width, unsigned int height, const std::string &title)
@@ -32,6 +35,13 @@ void Canvas::AddShape(std::shared_ptr<IDrawableShape> shape)
 void Canvas::ClearShapes()
 {
     m_shapes.clear();
+}
+
+sf::Vector2f Canvas::GetMousePosition() const
+{
+    sf::Vector2i pixelPos = sf::Mouse::getPosition(m_window);
+
+    return m_window.mapPixelToCoords(pixelPos);
 }
 
 bool Canvas::HandleEvents()
@@ -166,16 +176,16 @@ bool Canvas::Render()
 {
     m_window.clear(canvas::BACKGROUND_COLOR);
 
-    for (const auto &shape : m_shapes)
+    for (auto &shape : m_shapes)
     {
         m_window.draw(*shape->GetShape());
     }
 
-    for (auto &s : m_selected)
+    for (auto &shape : m_selected)
     {
-        m_window.draw(*s->GetShape());
+        m_window.draw(*shape->GetShape());
 
-        sf::FloatRect bounds = s->GetShape()->getGlobalBounds();
+        sf::FloatRect bounds = shape->GetShape()->getGlobalBounds();
 
         sf::RectangleShape frame(bounds.size);
         frame.setPosition(bounds.position);
@@ -191,6 +201,10 @@ bool Canvas::Render()
 
 std::shared_ptr<IDrawableShape> Canvas::HitTest(const sf::Vector2f &point)
 {
+    if (m_shapes.empty())
+    {
+        return nullptr;
+    }
     for (auto it = m_shapes.rbegin(); it != m_shapes.rend(); ++it)
     {
         const sf::FloatRect bounds = (*it)->GetShape()->getGlobalBounds();
@@ -203,118 +217,198 @@ std::shared_ptr<IDrawableShape> Canvas::HitTest(const sf::Vector2f &point)
     return nullptr;
 }
 
-Point ToPoint(const sf::Vector2f &vec)
+std::shared_ptr<IDrawableShape> Canvas::GetShapeByHit(const sf::Vector2f &point) const
 {
-    return Point(vec.x, vec.y);
+    for (auto it = m_shapes.rbegin(); it != m_shapes.rend(); ++it)
+    {
+        auto shape = *it;
+
+        auto group = std::dynamic_pointer_cast<CompositeShape>(shape);
+        if (group)
+        {
+            for (auto rit = group->GetShapes().rbegin(); rit != group->GetShapes().rend(); ++rit)
+            {
+                if ((*rit)->Contains(point))
+                    return *rit;
+            }
+            if (shape->Contains(point))
+                return shape;
+        }
+        else
+        {
+            if (shape->Contains(point))
+                return shape;
+        }
+    }
+
+    return nullptr;
 }
 
 void Canvas::AddNewShape(const sf::Event &event)
 {
-    if (event.is<sf::Event::KeyPressed>())
+    if (event.is<sf::Event::KeyPressed>() &&
+        (event.getIf<sf::Event::KeyPressed>()->scancode == sf::Keyboard::Scancode::Num1 ||
+         event.getIf<sf::Event::KeyPressed>()->scancode == sf::Keyboard::Scancode::Num2 ||
+         event.getIf<sf::Event::KeyPressed>()->scancode == sf::Keyboard::Scancode::Num3))
+
     {
-        auto keyEvent = event.getIf<sf::Event::KeyPressed>();
-        sf::Vector2i pixelPos = sf::Mouse::getPosition(m_window);
-        sf::Vector2f mousePos = m_window.mapPixelToCoords(pixelPos);
-        std::shared_ptr<IDrawableShape> newShape;
+        SetTool(std::make_unique<AddShapeState>());
 
-        if (keyEvent->scancode == sf::Keyboard::Scancode::Num1)
+        if (m_tool)
         {
-            newShape = std::make_shared<SFMLCircleAdapter>(ToPoint(mousePos), 50);
+            m_tool->HandleEvent(this, event);
         }
-        else if (keyEvent->scancode == sf::Keyboard::Scancode::Num2)
-        {
-            const sf::Vector2f mousePosP2(mousePos.x, mousePos.y + 100);
-            const sf::Vector2f mousePosP3(mousePos.x + 100, mousePos.y + 50);
-            newShape = std::make_shared<SFMLTriangleAdapter>(
-                ToPoint(mousePos),
-                ToPoint(mousePosP2),
-                ToPoint(mousePosP3));
-        }
-        else if (keyEvent->scancode == sf::Keyboard::Scancode::Num3)
-        {
-            const sf::Vector2f mousePosP2(mousePos.x + 100, mousePos.y + 100);
-            Point topLeft = ToPoint(mousePos);
-            float width = mousePosP2.x - mousePos.x;
-            float height = mousePosP2.y - mousePos.y;
-            newShape = std::make_shared<SFMLRectangleAdapter>(topLeft, width, height);
-        }
-        else
-            return;
-
-        m_shapes.push_back(newShape);
     }
 }
 
 void Canvas::ChangeShape(const sf::Event &event)
 {
+    // if (event.is<sf::Event::KeyPressed>() &&
+    // !m_selected.empty() &&
+    // sf::Keyboard::isKeyPressed(sf::Keyboard::Key::LControl))
+
     if (event.is<sf::Event::KeyPressed>() &&
-        !m_selected.empty() &&
         sf::Keyboard::isKeyPressed(sf::Keyboard::Key::LControl))
     {
         auto keyEvent = event.getIf<sf::Event::KeyPressed>();
+        if (keyEvent->scancode == sf::Keyboard::Scancode::C || keyEvent->scancode == sf::Keyboard::Scancode::X)
+        {
+            SetTool(std::make_unique<ChangeColorShapeState>());
+            if (m_tool)
+            {
+                m_tool->HandleEvent(this, event);
+            }
+        }
 
-        if (keyEvent->scancode == sf::Keyboard::Scancode::C)
+        if (keyEvent->scancode == sf::Keyboard::Scancode::Up || keyEvent->scancode == sf::Keyboard::Scancode::Down)
         {
-            for (auto s : m_selected)
+            SetTool(std::make_unique<ChangeThicknessShapeState>());
+
+            if (m_tool)
             {
-                const sf::Color shapeColor = s->GetShape()->getFillColor();
-                s->GetShape()->setFillColor(GetNextColor(shapeColor));
-            }
-        }
-        else if (keyEvent->scancode == sf::Keyboard::Scancode::X)
-        {
-            for (auto s : m_selected)
-            {
-                const sf::Color shapeColor = s->GetShape()->getOutlineColor();
-                s->GetShape()->setOutlineColor(GetNextColor(shapeColor));
-            }
-        }
-        else if (keyEvent->scancode == sf::Keyboard::Scancode::Up)
-        {
-            for (auto s : m_selected)
-            {
-                const float thickness = s->GetShape()->getOutlineThickness();
-                s->GetShape()->setOutlineThickness(thickness + 1.0f);
-            }
-        }
-        else if (keyEvent->scancode == sf::Keyboard::Scancode::Down)
-        {
-            for (auto s : m_selected)
-            {
-                const float thickness = s->GetShape()->getOutlineThickness();
-                if (thickness - 1 >= 0)
-                    s->GetShape()->setOutlineThickness(thickness - 1.0f);
+                m_tool->HandleEvent(this, event);
             }
         }
     }
 }
 
-sf::Color Canvas::GetNextColor(const sf::Color &colorShape) const
+void Canvas::ExecuteCommand(std::unique_ptr<ICommand> cmd)
 {
-
-    int current = static_cast<int>(GetEnumFromColor(colorShape));
-    int next = (current + 1) % SHAPE_COLORS_SIZE;
-
-    SHAPE_COLORS nextColorEnum = static_cast<SHAPE_COLORS>(next);
-
-    const auto it = COLORS_MAP.find(nextColorEnum);
-
-    if (it == COLORS_MAP.end())
-    {
-        return sf::Color::Transparent;
-    }
-    return it->second;
+    cmd->Execute();
 }
 
-SHAPE_COLORS Canvas::GetEnumFromColor(const sf::Color &color) const
+void Canvas::SetTool(std::unique_ptr<ITool> tool)
 {
-    for (const auto &pair : COLORS_MAP)
-    {
-        if (pair.second == color)
-        {
-            return pair.first;
-        }
-    }
-
-    return SHAPE_COLORS::BLACK;
+    m_tool = std::move(tool);
 }
+
+// void Canvas::AddNewShape(const sf::Event &event)
+// {
+//     if (event.is<sf::Event::KeyPressed>() )
+//     {
+//         auto keyEvent = event.getIf<sf::Event::KeyPressed>();
+//         sf::Vector2i pixelPos = sf::Mouse::getPosition(m_window);
+//         sf::Vector2f mousePos = m_window.mapPixelToCoords(pixelPos);
+//         std::shared_ptr<IDrawableShape> newShape;
+
+//         if (keyEvent->scancode == sf::Keyboard::Scancode::Num1)
+//         {
+//             newShape = std::make_shared<SFMLCircleAdapter>(ToPoint(mousePos), 50);
+//         }
+//         else if (keyEvent->scancode == sf::Keyboard::Scancode::Num2)
+//         {
+//             const sf::Vector2f mousePosP2(mousePos.x, mousePos.y + 100);
+//             const sf::Vector2f mousePosP3(mousePos.x + 100, mousePos.y + 50);
+//             newShape = std::make_shared<SFMLTriangleAdapter>(
+//                 ToPoint(mousePos),
+//                 ToPoint(mousePosP2),
+//                 ToPoint(mousePosP3));
+//         }
+//         else if (keyEvent->scancode == sf::Keyboard::Scancode::Num3)
+//         {
+//             const sf::Vector2f mousePosP2(mousePos.x + 100, mousePos.y + 100);
+//             Point topLeft = ToPoint(mousePos);
+//             float width = mousePosP2.x - mousePos.x;
+//             float height = mousePosP2.y - mousePos.y;
+//             newShape = std::make_shared<SFMLRectangleAdapter>(topLeft, width, height);
+//         }
+//         else
+//             return;
+
+//         m_shapes.push_back(newShape);
+//     }
+// }
+
+// void Canvas::ChangeShape(const sf::Event &event)
+// {
+//     if (event.is<sf::Event::KeyPressed>() &&
+//         !m_selected.empty() &&
+//         sf::Keyboard::isKeyPressed(sf::Keyboard::Key::LControl))
+//     {
+//         auto keyEvent = event.getIf<sf::Event::KeyPressed>();
+
+//         if (keyEvent->scancode == sf::Keyboard::Scancode::C)
+//         {
+//             for (auto s : m_selected)
+//             {
+//                 const sf::Color shapeColor = s->GetShape()->getFillColor();
+//                 s->GetShape()->setFillColor(GetNextColor(shapeColor));
+//             }
+//         }
+//         else if (keyEvent->scancode == sf::Keyboard::Scancode::X)
+//         {
+//             for (auto s : m_selected)
+//             {
+//                 const sf::Color shapeColor = s->GetShape()->getOutlineColor();
+//                 s->GetShape()->setOutlineColor(GetNextColor(shapeColor));
+//             }
+//         }
+//         else if (keyEvent->scancode == sf::Keyboard::Scancode::Up)
+//         {
+//             for (auto s : m_selected)
+//             {
+//                 const float thickness = s->GetShape()->getOutlineThickness();
+//                 s->GetShape()->setOutlineThickness(thickness + 1.0f);
+//             }
+//         }
+//         else if (keyEvent->scancode == sf::Keyboard::Scancode::Down)
+//         {
+//             for (auto s : m_selected)
+//             {
+//                 const float thickness = s->GetShape()->getOutlineThickness();
+//                 if (thickness - 1 >= 0)
+//                     s->GetShape()->setOutlineThickness(thickness - 1.0f);
+//             }
+//         }
+//     }
+// }
+
+// sf::Color Canvas::GetNextColor(const sf::Color &colorShape) const
+// {
+
+//     int current = static_cast<int>(GetEnumFromColor(colorShape));
+//     int next = (current + 1) % SHAPE_COLORS_SIZE;
+
+//     SHAPE_COLORS nextColorEnum = static_cast<SHAPE_COLORS>(next);
+
+//     const auto it = COLORS_MAP.find(nextColorEnum);
+
+//     if (it == COLORS_MAP.end())
+//     {
+//         return sf::Color::Transparent;
+//     }
+//     return it->second;
+// }
+
+// SHAPE_COLORS Canvas::GetEnumFromColor(const sf::Color &color) const
+// {
+//     for (const auto &pair : COLORS_MAP)
+//     {
+//         if (pair.second == color)
+//         {
+//             return pair.first;
+//         }
+//     }
+
+//     return SHAPE_COLORS::BLACK;
+// }

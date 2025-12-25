@@ -14,6 +14,12 @@ add_executable(GeometryEditor
     src/SFMLTriangleAdapter.cpp
     src/SFMLRectangleAdapter.cpp
     src/CompositeShape.cpp
+    src/AddShapeState.cpp
+    src/ChangeColorShapeState.cpp
+    src/ChangeThicknessShapeState.cpp
+    src/ChangeColorCommand.cpp
+    src/AddShapeCommand.cpp
+    src/ChangeThicknessCommand.cpp
     
 )
 

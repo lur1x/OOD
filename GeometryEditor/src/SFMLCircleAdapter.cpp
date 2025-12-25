@@ -44,15 +44,7 @@ std::shared_ptr<sf::Shape> SFMLCircleAdapter::GetShape() const
 
 bool SFMLCircleAdapter::Contains(const sf::Vector2f &point) const
 {
-    sf::Vector2f circlePos = m_circle->getPosition();
-
-    sf::Vector2f center = {circlePos.x + m_radius, circlePos.y + m_radius};
-
-    float dx = point.x - center.x;
-    float dy = point.y - center.y;
-    float distanceSquared = dx * dx + dy * dy;
-
-    return distanceSquared <= (m_radius * m_radius);
+    return GetShape()->getGlobalBounds().contains(point);
 }
 
 void SFMLCircleAdapter::Move(const sf::Vector2f &delta)

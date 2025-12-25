@@ -91,6 +91,11 @@ enum class SHAPE_COLORS
     TRANSPARENT
 
 };
+enum class SHAPE_COLOR_CHANGE
+{
+    THICKNESS,
+    FILL,
+};
 
 const int SHAPE_COLORS_SIZE = 6;
 
