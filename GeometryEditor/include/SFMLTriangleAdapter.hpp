@@ -15,6 +15,9 @@ public:
     std::string GetName() const override;
     std::string ToString() const override;
 
+    bool Contains(const sf::Vector2f &point) const override;
+    void Move(const sf::Vector2f &delta) override;
+
     std::shared_ptr<sf::Shape> GetShape() const override;
 
 private:

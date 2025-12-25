@@ -38,3 +38,18 @@ std::shared_ptr<sf::Shape> SFMLRectangleAdapter::GetShape() const
 {
     return m_rectangle;
 }
+
+bool SFMLRectangleAdapter::Contains(const sf::Vector2f &point) const
+{
+    m_rectangle->setPosition({m_topLeft.GetX(), m_topLeft.GetY()});
+
+    sf::FloatRect bounds = m_rectangle->getGlobalBounds();
+    return bounds.contains(point);
+}
+
+void SFMLRectangleAdapter::Move(const sf::Vector2f &delta)
+{
+    m_topLeft = Point(m_topLeft.GetX() + delta.x, m_topLeft.GetY() + delta.y);
+
+    m_rectangle->move(delta);
+}

@@ -47,3 +47,32 @@ std::shared_ptr<sf::Shape> SFMLTriangleAdapter::GetShape() const
 {
     return m_triangle;
 }
+
+bool SFMLTriangleAdapter::Contains(const sf::Vector2f &point) const
+{
+    sf::Vector2f v1 = m_triangle->getPoint(0);
+    sf::Vector2f v2 = m_triangle->getPoint(1);
+    sf::Vector2f v3 = m_triangle->getPoint(2);
+
+    float denominator = ((v2.y - v3.y) * (v1.x - v3.x) + (v3.x - v2.x) * (v1.y - v3.y));
+
+    if (std::fabs(denominator) < 1e-6)
+        return false;
+
+    float a = ((v2.y - v3.y) * (point.x - v3.x) + (v3.x - v2.x) * (point.y - v3.y)) / denominator;
+    float b = ((v3.y - v1.y) * (point.x - v3.x) + (v1.x - v3.x) * (point.y - v3.y)) / denominator;
+    float c = 1.0f - a - b;
+
+    return (a >= 0 && a <= 1 && b >= 0 && b <= 1 && c >= 0 && c <= 1);
+}
+
+void SFMLTriangleAdapter::Move(const sf::Vector2f &delta)
+{
+    m_p1 = Point(m_p1.GetX() + delta.x, m_p1.GetY() + delta.y);
+    m_p2 = Point(m_p2.GetX() + delta.x, m_p2.GetY() + delta.y);
+    m_p3 = Point(m_p3.GetX() + delta.x, m_p3.GetY() + delta.y);
+
+    m_triangle->setPoint(0, sf::Vector2f(m_p1.GetX(), m_p1.GetY()));
+    m_triangle->setPoint(1, sf::Vector2f(m_p2.GetX(), m_p2.GetY()));
+    m_triangle->setPoint(2, sf::Vector2f(m_p3.GetX(), m_p3.GetY()));
+}

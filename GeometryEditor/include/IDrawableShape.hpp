@@ -8,4 +8,7 @@ class IDrawableShape : public IShape
 public:
     virtual ~IDrawableShape() = default;
     virtual std::shared_ptr<sf::Shape> GetShape() const = 0;
+
+    virtual bool Contains(const sf::Vector2f &point) const = 0;
+    virtual void Move(const sf::Vector2f &delta) = 0;
 };

@@ -41,3 +41,23 @@ std::shared_ptr<sf::Shape> SFMLCircleAdapter::GetShape() const
 {
     return m_circle;
 }
+
+bool SFMLCircleAdapter::Contains(const sf::Vector2f &point) const
+{
+    sf::Vector2f circlePos = m_circle->getPosition();
+
+    sf::Vector2f center = {circlePos.x + m_radius, circlePos.y + m_radius};
+
+    float dx = point.x - center.x;
+    float dy = point.y - center.y;
+    float distanceSquared = dx * dx + dy * dy;
+
+    return distanceSquared <= (m_radius * m_radius);
+}
+
+void SFMLCircleAdapter::Move(const sf::Vector2f &delta)
+{
+    m_center = Point(m_center.GetX() + delta.x, m_center.GetY() + delta.y);
+
+    m_circle->move(delta);
+}

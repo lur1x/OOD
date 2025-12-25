@@ -13,6 +13,7 @@ add_executable(GeometryEditor
     src/Canvas.cpp
     src/SFMLTriangleAdapter.cpp
     src/SFMLRectangleAdapter.cpp
+    src/CompositeShape.cpp
     
 )
 
