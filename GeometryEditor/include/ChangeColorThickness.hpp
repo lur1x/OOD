@@ -1,0 +1,15 @@
+#pragma once
+
+#include "../include/ITool.hpp"
+#include "../include/ChangeColorCommand.hpp"
+#include "../include/Canvas.hpp"
+
+class ChangeColorThickness : public ITool
+{
+public:
+    ChangeColorThickness(const sf::Color &color) : m_color(color) {}
+    void HandleEvent(Canvas *canvas) override;
+
+private:
+    sf::Color m_color;
+};

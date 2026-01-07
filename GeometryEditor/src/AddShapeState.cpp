@@ -5,42 +5,40 @@ Point ToPoint(const sf::Vector2f &vec)
     return Point(vec.x, vec.y);
 }
 
-void AddShapeState::HandleEvent(Canvas *canvas, const sf::Event &event)
-
+void AddShapeState::HandleEvent(Canvas *canvas)
 {
+    std::shared_ptr<IDrawableShape> newShape;
 
-    if (event.is<sf::Event::KeyPressed>())
+    switch (m_shape_type)
+
     {
-        auto keyEvent = event.getIf<sf::Event::KeyPressed>();
-        const sf::Vector2f mousePos = canvas->GetMousePosition();
-        std::shared_ptr<IDrawableShape> newShape;
 
-        if (keyEvent->scancode == sf::Keyboard::Scancode::Num1)
-        {
-            newShape = std::make_shared<SFMLCircleAdapter>(ToPoint(mousePos), 50);
-        }
-        else if (keyEvent->scancode == sf::Keyboard::Scancode::Num2)
-        {
-            const sf::Vector2f mousePosP2(mousePos.x, mousePos.y + 100);
-            const sf::Vector2f mousePosP3(mousePos.x + 100, mousePos.y + 50);
-            newShape = std::make_shared<SFMLTriangleAdapter>(
-                ToPoint(mousePos),
-                ToPoint(mousePosP2),
-                ToPoint(mousePosP3));
-        }
-        else if (keyEvent->scancode == sf::Keyboard::Scancode::Num3)
-        {
-            const sf::Vector2f mousePosP2(mousePos.x + 100, mousePos.y + 100);
-            Point topLeft = ToPoint(mousePos);
-            float width = mousePosP2.x - mousePos.x;
-            float height = mousePosP2.y - mousePos.y;
-            newShape = std::make_shared<SFMLRectangleAdapter>(topLeft, width, height);
-        }
+    case SHAPES_TYPE::CIRCLE_T:
 
-        else
+        newShape = std::make_shared<SFMLCircleAdapter>(Point(0, m_startPos.y), 50.0f);
 
-            return;
+        break;
 
-        canvas->ExecuteCommand(std::make_unique<AddShapeCommand>(canvas, newShape));
+    case SHAPES_TYPE::RECTANGLE_T:
+
+        newShape = std::make_shared<SFMLRectangleAdapter>(
+            Point(0, m_startPos.y),
+            100.0f,
+            100.0f);
+        break;
+
+    case SHAPES_TYPE::TRIANGLE_T:
+
+        newShape = std::make_shared<SFMLTriangleAdapter>(
+            Point(0, m_startPos.y),
+            Point(0, m_startPos.y + 100),
+            Point(100, m_startPos.y + 50));
+        break;
+
+    default:
+
+        return;
     }
+
+    canvas->ExecuteCommand(std::make_unique<AddShapeCommand>(canvas, newShape));
 }

@@ -7,5 +7,10 @@
 class ChangeThicknessShapeState : public ITool
 {
 public:
-    void HandleEvent(Canvas *canvas, const sf::Event &event) override;
+    ChangeThicknessShapeState(const unsigned int thickness) : m_thickness(thickness) {}
+
+    void HandleEvent(Canvas *canvas) override;
+
+private:
+    unsigned int m_thickness;
 };

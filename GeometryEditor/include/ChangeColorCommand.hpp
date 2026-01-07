@@ -7,9 +7,9 @@
 class ChangeColorCommand : public ICommand
 {
 public:
-    ChangeColorCommand(const std::shared_ptr<IDrawableShape> &shape, const sf::Color &newColor, enum SHAPE_COLOR_CHANGE shapeType)
+    ChangeColorCommand(const std::shared_ptr<IDrawableShape> &shape, const sf::Color &newColor)
 
-        : m_shape(shape), m_newColor(newColor), m_shapeType(shapeType)
+        : m_shape(shape), m_newColor(newColor)
     {
     }
     void Execute() override;
@@ -17,5 +17,4 @@ public:
 private:
     std::shared_ptr<IDrawableShape> m_shape;
     sf::Color m_newColor;
-    SHAPE_COLOR_CHANGE m_shapeType;
 };

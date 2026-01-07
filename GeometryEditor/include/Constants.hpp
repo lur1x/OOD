@@ -7,6 +7,7 @@ namespace window
     const unsigned int WIDTH_SIZE = 800;
     const unsigned int HEIGHT_SIZE = 500;
     const std::string TITLE = "Geometry Editor";
+    const float frame_thickness = 2.f;
 }
 
 namespace input
@@ -55,7 +56,7 @@ namespace canvas
     const unsigned int FRAME_RATE = 60;
     const float SELECTION_FRAME_THICKNESS = 2.0f;
     const sf::Color BACKGROUND_COLOR = sf::Color::White;
-    const sf::Color SELECTION_FRAME_COLOR = sf::Color::Red;
+    const sf::Color SELECTION_FRAME_COLOR = sf::Color::Green;
     const sf::Color TRANSPARENT_COLOR = sf::Color::Transparent;
 }
 
@@ -81,30 +82,42 @@ const std::unordered_map<std::string, SHAPES_TYPE> SHAPES_MAP =
         {input::CIRCLE, SHAPES_TYPE::CIRCLE_T},
         {input::TRIANGLE, SHAPES_TYPE::TRIANGLE_T}};
 
-enum class SHAPE_COLORS
+enum class Action
 {
-    RED,
-    BLUE,
-    BLACK,
-    WHITE,
-    YELLOW,
-    TRANSPARENT
+    SwitchMode,
+    Thick1,
+    Thick3,
+    Thick5,
+    ColorRed,
+    ColorBlue,
+    ColorWhite,
+    ColorBlack,
+    FillColorRed,
+    FillColorBlue,
+    FillColorWhite,
+    FillColorBlack,
+    AddRectangle,
+    AddTriangle,
+    AddCircle
 
 };
-enum class SHAPE_COLOR_CHANGE
-{
-    THICKNESS,
-    FILL,
-};
 
-const int SHAPE_COLORS_SIZE = 6;
+const std::vector<std::pair<sf::String, Action>> BUTTONS = {
 
-const std::unordered_map<SHAPE_COLORS, sf::Color> COLORS_MAP =
-    {
-        {SHAPE_COLORS::RED, sf::Color::Red},
-        {SHAPE_COLORS::BLUE, sf::Color::Blue},
-        {SHAPE_COLORS::BLACK, sf::Color::Black},
-        {SHAPE_COLORS::WHITE, sf::Color::White},
-        {SHAPE_COLORS::YELLOW, sf::Color::Yellow},
-        {SHAPE_COLORS::TRANSPARENT, sf::Color::Transparent},
+    {"Switch mode", Action::SwitchMode},
+    {"Thickness 1", Action::Thick1},
+    {"Thickness 3", Action::Thick3},
+    {"Thickness 5", Action::Thick5},
+    {"Color red", Action::ColorRed},
+    {"Color blue", Action::ColorBlue},
+    {"Color white", Action::ColorWhite},
+    {"Color black", Action::ColorBlack},
+    {"Thick red", Action::FillColorRed},
+    {"Thick blue", Action::FillColorBlue},
+    {"Thick white", Action::FillColorWhite},
+    {"Thick black", Action::FillColorBlack},
+    {"Triangle", Action::AddTriangle},
+    {"Rectangle", Action::AddRectangle},
+    {"Circle", Action::AddCircle},
+
 };
