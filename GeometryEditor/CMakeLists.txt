@@ -20,7 +20,8 @@ add_executable(GeometryEditor
     src/ChangeColorCommand.cpp
     src/AddShapeCommand.cpp
     src/ChangeThicknessCommand.cpp
-    
+    src/DragCommand.cpp
+    src/DragState.cpp
 )
 
 target_compile_definitions(GeometryEditor PRIVATE SFML_STATIC)

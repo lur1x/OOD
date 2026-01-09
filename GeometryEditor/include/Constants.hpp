@@ -2,6 +2,7 @@
 
 #include <string>
 #include <unordered_map>
+#include <SFML/Graphics.hpp>
 namespace window
 {
     const unsigned int WIDTH_SIZE = 800;
@@ -108,3 +109,15 @@ const std::unordered_map<SHAPE_COLORS, sf::Color> COLORS_MAP =
         {SHAPE_COLORS::YELLOW, sf::Color::Yellow},
         {SHAPE_COLORS::TRANSPARENT, sf::Color::Transparent},
 };
+
+enum class MODE
+
+{
+
+    DND,
+
+    SHAPE_CHANGE,
+
+};
+
+const int MODE_SIZE = 2;

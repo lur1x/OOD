@@ -10,8 +10,9 @@ std::vector<std::shared_ptr<IDrawableShape>> ShapeParser::ParseFile(std::ifstrea
     {
         size_t colonPos = line.find(output::COLON);
         if (colonPos == std::string::npos)
+        {
             continue;
-
+        }
         std::string type = line.substr(0, colonPos);
         std::string paramsStr = line.substr(colonPos + 1);
 
@@ -24,7 +25,9 @@ std::vector<std::shared_ptr<IDrawableShape>> ShapeParser::ParseFile(std::ifstrea
         {
             params.push_back(value);
             if (!(ss >> comma))
+            {
                 break;
+            }
         }
 
         if (auto it = SHAPES_MAP.find(type); it != SHAPES_MAP.end())

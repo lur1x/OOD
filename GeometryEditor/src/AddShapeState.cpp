@@ -6,9 +6,7 @@ Point ToPoint(const sf::Vector2f &vec)
 }
 
 void AddShapeState::HandleEvent(Canvas *canvas, const sf::Event &event)
-
 {
-
     if (event.is<sf::Event::KeyPressed>())
     {
         auto keyEvent = event.getIf<sf::Event::KeyPressed>();
@@ -36,11 +34,10 @@ void AddShapeState::HandleEvent(Canvas *canvas, const sf::Event &event)
             float height = mousePosP2.y - mousePos.y;
             newShape = std::make_shared<SFMLRectangleAdapter>(topLeft, width, height);
         }
-
         else
-
+        {
             return;
-
+        }
         canvas->ExecuteCommand(std::make_unique<AddShapeCommand>(canvas, newShape));
     }
 }
