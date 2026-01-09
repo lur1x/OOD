@@ -6,14 +6,15 @@
 #include "Constants.hpp"
 #include "Canvas.hpp"
 #include "ChangeColorCommand.hpp"
+#include "ChangeColorCommandFill.hpp"
 
 class ChangeColorShapeState : public ITool
 {
 public:
-    void HandleEvent(Canvas *canvas, const sf::Event &event) override;
+    ChangeColorShapeState(const sf::Color &color) : m_color(color) {};
+
+    void HandleEvent(Canvas *canvas) override;
 
 private:
-    sf::Color GetNextColor(const sf::Color &colorShape) const;
-
-    SHAPE_COLORS GetEnumFromColor(const sf::Color &color) const;
+    sf::Color m_color;
 };

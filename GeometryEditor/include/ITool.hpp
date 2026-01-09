@@ -7,5 +7,5 @@ class ITool
 {
 public:
     virtual ~ITool() = default;
-    virtual void HandleEvent(Canvas *canvas, const sf::Event &event) = 0;
+    virtual void HandleEvent(Canvas *canvas) = 0;
 };

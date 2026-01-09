@@ -2,12 +2,13 @@
 #include <SFML/Graphics.hpp>
 #include "IDrawableShape.hpp"
 #include "CompositeShape.hpp"
-
 #include "SFMLCircleAdapter.hpp"
 #include "SFMLRectangleAdapter.hpp"
 #include "SFMLTriangleAdapter.hpp"
 #include "ICommand.hpp"
 #include "ITool.hpp"
+#include "Panel.hpp"
+#include <optional>
 #include "Constants.hpp"
 class Canvas
 {
@@ -21,7 +22,7 @@ public:
 
     sf::Vector2f GetMousePosition() const;
     std::shared_ptr<IDrawableShape> HitTest(const sf::Vector2f &point) const;
-    std::shared_ptr<IDrawableShape> GetShapeByHit(const sf::Vector2f &point) const;
+    std::vector<std::shared_ptr<IDrawableShape>> GetAllSelectedShapes();
     void ExecuteCommand(std::unique_ptr<ICommand> cmd);
     void ClearSelected();
 
@@ -39,6 +40,8 @@ public:
 
     std::vector<std::shared_ptr<IDrawableShape>> GetSelected() const;
 
+    std::optional<sf::Event> GetEvent() const;
+
 private:
     sf::RenderWindow m_window;
     std::vector<std::shared_ptr<IDrawableShape>> m_shapes;
@@ -48,22 +51,24 @@ private:
 
     sf::Vector2f m_lastMousePos;
     std::unique_ptr<ITool> m_tool;
-    MODE m_mode = MODE::DND;
+    Panel m_panel;
+    std::optional<sf::Event> m_event;
 
+    void SetEvent(const sf::Event &event);
     void SetTool(std::unique_ptr<ITool> tool);
 
     void ClearTool();
 
     bool HandleEvents();
 
-    void GroupSelectedShapes();
-    void UngroupSelectedShapes();
-
-    void AddNewShape(const sf::Event &event);
-    void ChangeShape(const sf::Event &event);
-    void ChangeMode(const sf::Event &event);
+    // void GroupSelectedShapes();
+    // void UngroupSelectedShapes();
 
     bool Render();
 
     sf::RectangleShape RenderFrame(const sf::FloatRect &bounds) const;
+
+    void SelectEvent(const sf::Event &event);
+
+    void CollectShapes(const std::shared_ptr<IDrawableShape> &shape, std::vector<std::shared_ptr<IDrawableShape>> &outShapes);
 };

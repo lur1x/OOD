@@ -1,7 +1,13 @@
 #include "../include/DragState.hpp"
 
-void DragState::HandleEvent(Canvas *canvas, const sf::Event &event)
+void DragState::HandleEvent(Canvas *canvas)
 {
+    auto eventOpt = canvas->GetEvent();
+    if (!eventOpt)
+        return;
+
+    const sf::Event &event = *eventOpt;
+
     if (auto mousePress = event.getIf<sf::Event::MouseButtonPressed>())
     {
         if (mousePress->button == sf::Mouse::Button::Left)
@@ -44,6 +50,15 @@ void DragState::HandleEvent(Canvas *canvas, const sf::Event &event)
         {
             for (const auto &s : canvas->GetSelected())
             {
+                const sf::FloatRect bounds = s->GetShape()->getGlobalBounds();
+
+                if (bounds.position.y + delta.y <= m_startPos.y || bounds.position.y + delta.y + bounds.size.y >= window::HEIGHT_SIZE)
+
+                    delta.y = 0;
+
+                if (bounds.position.x + delta.x <= 0 || bounds.position.x + delta.x + bounds.size.x >= window::WIDTH_SIZE)
+
+                    delta.x = 0;
                 canvas->ExecuteCommand(std::make_unique<DragCommand>(s, delta));
             }
             canvas->SetLastMousePos(currPos);

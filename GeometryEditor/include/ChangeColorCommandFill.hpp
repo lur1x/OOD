@@ -1,20 +1,25 @@
 #pragma once
 
 #include <memory>
+
 #include "ICommand.hpp"
 #include "IDrawableShape.hpp"
-#include "Constants.hpp"
-class ChangeColorCommand : public ICommand
+
+class ChangeColorCommandFill : public ICommand
+
 {
+
 public:
-    ChangeColorCommand(const std::shared_ptr<IDrawableShape> &shape, const sf::Color &newColor)
+    ChangeColorCommandFill(const std::shared_ptr<IDrawableShape> &shape, const sf::Color &newColor)
 
         : m_shape(shape), m_newColor(newColor)
     {
     }
+
     void Execute() override;
 
 private:
     std::shared_ptr<IDrawableShape> m_shape;
+
     sf::Color m_newColor;
 };

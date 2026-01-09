@@ -4,10 +4,13 @@
 #include "../include/AddShapeState.hpp"
 #include "../include/ChangeThicknessShapeState.hpp"
 #include "../include/DragState.hpp"
+#include "../include/AddShapeState.hpp"
 #include <algorithm>
 
 Canvas::Canvas(unsigned int width, unsigned int height, const std::string &title)
-    : m_window(sf::VideoMode({width, height}), title)
+    : m_window(sf::VideoMode({width, height}), title), m_panel(m_window, [this](std::unique_ptr<ITool> tool)
+
+                                                               { this->SetTool(std::move(tool)); })
 {
     m_window.setFramerateLimit(canvas::FRAME_RATE);
 }
@@ -58,97 +61,104 @@ bool Canvas::HandleEvents()
             m_window.close();
             return false;
         }
-        ChangeMode(event.value());
-        AddNewShape(event.value());
+        SetEvent(*event);
+        SelectEvent(*event);
 
-        switch (m_mode)
-        {
-        case MODE::SHAPE_CHANGE:
-            ChangeShape(event.value());
-            break;
-
-        case MODE::DND:
-            if (!dynamic_cast<DragState *>(m_tool.get()))
-            {
-                SetTool(std::make_unique<DragState>());
-            }
-            break;
-        }
+        m_panel.HandleMouseEvent(*event);
 
         if (m_tool)
         {
-            m_tool->HandleEvent(this, event.value());
+            // m_tool->HandleEvent(this, event.value());
+            m_tool->HandleEvent(this);
+
+            if (!m_panel.IsDragMode())
+
+                SetTool(nullptr);
         }
     }
 
     return true;
 }
 
-void Canvas::ChangeMode(const sf::Event &event)
+void Canvas::SelectEvent(const sf::Event &event)
 {
-    if (event.is<sf::Event::KeyPressed>() && sf::Keyboard::isKeyPressed(sf::Keyboard::Key::LControl) && sf::Keyboard::isKeyPressed(sf::Keyboard::Key::V))
+    if (auto mouseRelease = event.getIf<sf::Event::MouseButtonReleased>())
     {
-        const int current = static_cast<int>(m_mode);
-        const int next = (current + 1) % MODE_SIZE;
-
-        m_mode = static_cast<MODE>(next);
-
-        switch (m_mode)
+        if (mouseRelease->button == sf::Mouse::Button::Left)
         {
-        case MODE::SHAPE_CHANGE:
-            ClearSelected();
-            ClearTool();
-            break;
-        case MODE::DND:
-            SetTool(std::make_unique<DragState>());
-            break;
+            sf::Vector2f clickPos = GetMousePosition();
+
+            bool shift = sf::Keyboard::isKeyPressed(sf::Keyboard::Key::LShift);
+
+            auto hit = HitTest(clickPos);
+
+            const sf::Vector2f panelSize = m_panel.GetPanelSize();
+
+            if (clickPos.y <= panelSize.y)
+
+                return;
+
+            if (hit)
+            {
+                if (!shift)
+
+                    ClearSelected();
+
+                SelectShape(hit);
+
+                StartDragging(clickPos);
+            }
+
+            else if (!shift)
+
+                ClearSelected();
         }
     }
 }
 
-void Canvas::GroupSelectedShapes()
-{
-    if (m_selected.empty())
-    {
-        return;
-    }
+// void Canvas::GroupSelectedShapes()
+// {
+//     if (m_selected.empty())
+//     {
+//         return;
+//     }
 
-    auto group = std::make_shared<CompositeShape>();
-    for (auto &s : m_selected)
-    {
-        group->Add(s);
-    }
+//     auto group = std::make_shared<CompositeShape>();
+//     for (auto &s : m_selected)
+//     {
+//         group->Add(s);
+//     }
 
-    m_shapes.push_back(group);
-    m_selected.clear();
-    m_selected.push_back(group);
-}
+//     m_shapes.push_back(group);
+//     m_selected.clear();
+//     m_selected.push_back(group);
+// }
 
-void Canvas::UngroupSelectedShapes()
-{
-    std::vector<std::shared_ptr<IDrawableShape>> toAdd;
+// void Canvas::UngroupSelectedShapes()
+// {
+//     std::vector<std::shared_ptr<IDrawableShape>> toAdd;
 
-    for (auto &s : m_selected)
-    {
-        auto g = std::dynamic_pointer_cast<CompositeShape>(s);
-        if (g)
-        {
-            for (auto &child : g->GetShapes())
-            {
-                toAdd.push_back(child);
-            }
-            auto it = std::find(m_shapes.begin(), m_shapes.end(), s);
-            if (it != m_shapes.end())
-            {
-                m_shapes.erase(it);
-            }
-        }
-    }
+//     for (auto &s : m_selected)
+//     {
+//         auto g = std::dynamic_pointer_cast<CompositeShape>(s);
+//         if (g)
+//         {
+//             for (auto &child : g->GetShapes())
+//             {
+//                 toAdd.push_back(child);
+//             }
+//             auto it = std::find(m_shapes.begin(), m_shapes.end(), s);
+//             if (it != m_shapes.end())
+//             {
+//                 m_shapes.erase(it);
+//             }
+//         }
+//     }
 
-    m_shapes.insert(m_shapes.end(), toAdd.begin(), toAdd.end());
+//     m_shapes.insert(m_shapes.end(), toAdd.begin(), toAdd.end());
 
-    m_selected = toAdd;
-}
+//     m_selected = toAdd;
+// }
 
 bool Canvas::Render()
 {
@@ -165,7 +175,7 @@ bool Canvas::Render()
         const sf::RectangleShape frame = RenderFrame(bounds);
         m_window.draw(frame);
     }
-
+    m_panel.DrawPanel();
     m_window.display();
     return true;
 }
@@ -199,70 +209,68 @@ std::shared_ptr<IDrawableShape> Canvas::HitTest(const sf::Vector2f &point) const
     return nullptr;
 }
 
-std::shared_ptr<IDrawableShape> Canvas::GetShapeByHit(const sf::Vector2f &point) const
+std::vector<std::shared_ptr<IDrawableShape>> Canvas::GetAllSelectedShapes()
 {
-    for (auto it = m_shapes.rbegin(); it != m_shapes.rend(); ++it)
-    {
-        auto shape = *it;
+    auto shapes = GetSelected();
 
-        auto group = std::dynamic_pointer_cast<CompositeShape>(shape);
-        if (group)
-        {
-            for (auto rit = group->GetShapes().rbegin(); rit != group->GetShapes().rend(); ++rit)
-            {
-                if ((*rit)->GetShape()->getGlobalBounds().contains(point))
-                {
-                    return *rit;
-                }
-            }
-            if (shape->Contains(point))
-            {
-                return shape;
-            }
-        }
-        else if (shape->Contains(point))
-        {
-            return shape;
-        }
-    }
+    std::vector<std::shared_ptr<IDrawableShape>> result;
 
-    return nullptr;
+    for (const auto &s : shapes)
+
+        CollectShapes(s, result);
+
+    return result;
 }
 
-void Canvas::AddNewShape(const sf::Event &event)
+void Canvas::CollectShapes(const std::shared_ptr<IDrawableShape> &shape, std::vector<std::shared_ptr<IDrawableShape>> &outShapes)
 {
-    if (event.is<sf::Event::KeyPressed>() &&
-        (event.getIf<sf::Event::KeyPressed>()->scancode == sf::Keyboard::Scancode::Num1 ||
-         event.getIf<sf::Event::KeyPressed>()->scancode == sf::Keyboard::Scancode::Num2 ||
-         event.getIf<sf::Event::KeyPressed>()->scancode == sf::Keyboard::Scancode::Num3))
+    auto group = std::dynamic_pointer_cast<CompositeShape>(shape);
 
-    {
-        SetTool(std::make_unique<AddShapeState>());
+    if (group)
 
-        if (m_tool)
-        {
-            m_tool->HandleEvent(this, event);
-        }
-    }
+        for (const auto &s : group->GetShapes())
+
+            CollectShapes(s, outShapes);
+
+    else
+
+        outShapes.push_back(shape);
 }
 
-void Canvas::ChangeShape(const sf::Event &event)
-{
-    if (event.is<sf::Event::KeyPressed>() &&
-        sf::Keyboard::isKeyPressed(sf::Keyboard::Key::LControl))
-    {
-        auto keyEvent = event.getIf<sf::Event::KeyPressed>();
-        if (keyEvent->scancode == sf::Keyboard::Scancode::C || keyEvent->scancode == sf::Keyboard::Scancode::X)
-        {
-            SetTool(std::make_unique<ChangeColorShapeState>());
-        }
+// void Canvas::AddNewShape(const sf::Event &event)
+// {
+//     if (event.is<sf::Event::KeyPressed>() &&
+//         (event.getIf<sf::Event::KeyPressed>()->scancode == sf::Keyboard::Scancode::Num1 ||
+//          event.getIf<sf::Event::KeyPressed>()->scancode == sf::Keyboard::Scancode::Num2 ||
+//          event.getIf<sf::Event::KeyPressed>()->scancode == sf::Keyboard::Scancode::Num3))
 
-        if (keyEvent->scancode == sf::Keyboard::Scancode::Up || keyEvent->scancode == sf::Keyboard::Scancode::Down)
-        {
-            SetTool(std::make_unique<ChangeThicknessShapeState>());
-        }
-    }
-}
+//     {
+//         SetTool(std::make_unique<AddShapeState>());
+
+//         if (m_tool)
+//         {
+//             m_tool->HandleEvent(this, event);
+//         }
+//     }
+// }
+
+// void Canvas::ChangeShape(const sf::Event &event)
+// {
+//     if (event.is<sf::Event::KeyPressed>() &&
+//         sf::Keyboard::isKeyPressed(sf::Keyboard::Key::LControl))
+//     {
+//         auto keyEvent = event.getIf<sf::Event::KeyPressed>();
+//         if (keyEvent->scancode == sf::Keyboard::Scancode::C || keyEvent->scancode == sf::Keyboard::Scancode::X)
+//         {
+//             SetTool(std::make_unique<ChangeColorShapeState>());
+//         }
+
+//         if (keyEvent->scancode == sf::Keyboard::Scancode::Up || keyEvent->scancode == sf::Keyboard::Scancode::Down)
+//         {
+//             SetTool(std::make_unique<ChangeThicknessShapeState>());
+//         }
+//     }
+// }
 
 void Canvas::ExecuteCommand(std::unique_ptr<ICommand> cmd)
 {
@@ -354,3 +362,15 @@ void Canvas::UngroupSelected()
     m_shapes.insert(m_shapes.end(), toAdd.begin(), toAdd.end());
     m_selected = toAdd;
 };
+
+std::optional<sf::Event> Canvas::GetEvent() const
+
+{
+
+    return m_event;
+}
+
+void Canvas::SetEvent(const sf::Event &event)
+{
+    m_event = event;
+}

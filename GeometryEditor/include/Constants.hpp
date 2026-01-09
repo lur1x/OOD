@@ -3,6 +3,7 @@
 #include <string>
 #include <unordered_map>
 #include <SFML/Graphics.hpp>
+#include <map>
 namespace window
 {
     const unsigned int WIDTH_SIZE = 800;
@@ -82,42 +83,70 @@ const std::unordered_map<std::string, SHAPES_TYPE> SHAPES_MAP =
         {input::CIRCLE, SHAPES_TYPE::CIRCLE_T},
         {input::TRIANGLE, SHAPES_TYPE::TRIANGLE_T}};
 
-enum class SHAPE_COLORS
+enum class Action
 {
-    RED,
-    BLUE,
-    BLACK,
-    WHITE,
-    YELLOW,
-    TRANSPARENT
+    SwitchMode,
 
-};
-enum class SHAPE_COLOR_CHANGE
-{
-    THICKNESS,
-    FILL,
-};
+    Thick1,
 
-const int SHAPE_COLORS_SIZE = 6;
+    Thick3,
 
-const std::unordered_map<SHAPE_COLORS, sf::Color> COLORS_MAP =
-    {
-        {SHAPE_COLORS::RED, sf::Color::Red},
-        {SHAPE_COLORS::BLUE, sf::Color::Blue},
-        {SHAPE_COLORS::BLACK, sf::Color::Black},
-        {SHAPE_COLORS::WHITE, sf::Color::White},
-        {SHAPE_COLORS::YELLOW, sf::Color::Yellow},
-        {SHAPE_COLORS::TRANSPARENT, sf::Color::Transparent},
-};
+    Thick5,
 
-enum class MODE
+    ColorRed,
 
-{
+    ColorBlue,
 
-    DND,
+    ColorWhite,
 
-    SHAPE_CHANGE,
+    ColorBlack,
+
+    FillColorRed,
+
+    FillColorBlue,
+
+    FillColorWhite,
+
+    FillColorBlack,
+
+    AddRectangle,
+
+    AddTriangle,
+
+    AddCircle
 
 };
 
-const int MODE_SIZE = 2;
+const std::vector<std::pair<sf::String, Action>> BUTTONS = {
+
+    {"Switch mode", Action::SwitchMode},
+
+    {"Thickness 1", Action::Thick1},
+
+    {"Thickness 3", Action::Thick3},
+
+    {"Thickness 5", Action::Thick5},
+
+    {"Color red", Action::ColorRed},
+
+    {"Color blue", Action::ColorBlue},
+
+    {"Color white", Action::ColorWhite},
+
+    {"Color black", Action::ColorBlack},
+
+    {"Thick red", Action::FillColorRed},
+
+    {"Thick blue", Action::FillColorBlue},
+
+    {"Thick white", Action::FillColorWhite},
+
+    {"Thick black", Action::FillColorBlack},
+
+    {"Triangle", Action::AddTriangle},
+
+    {"Rectangle", Action::AddRectangle},
+
+    {"Circle", Action::AddCircle},
+
+};

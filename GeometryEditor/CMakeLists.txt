@@ -22,8 +22,12 @@ add_executable(GeometryEditor
     src/ChangeThicknessCommand.cpp
     src/DragCommand.cpp
     src/DragState.cpp
+    src/Button.cpp
+    src/Panel.cpp
+    src/ChangeColorCommandFill.cpp
+    src/ChangeColorThikness.cpp
 )
-
+configure_file(${CMAKE_SOURCE_DIR}/include/arialmt.ttf ${CMAKE_CURRENT_BINARY_DIR}/arialmt.ttf COPYONLY)
 target_compile_definitions(GeometryEditor PRIVATE SFML_STATIC)
 
 target_include_directories(GeometryEditor PRIVATE 
