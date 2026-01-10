@@ -7,11 +7,10 @@
 class AddShapeCommand : public ICommand
 {
 public:
-    AddShapeCommand(Canvas *canvas, std::shared_ptr<IDrawableShape> shape)
-        : m_canvas(canvas), m_shape(shape)
-    {
-    }
+    AddShapeCommand(Canvas *canvas, std::shared_ptr<IDrawableShape> shape);
+
     void Execute() override;
+    void Undo() override;
 
 private:
     Canvas *m_canvas;

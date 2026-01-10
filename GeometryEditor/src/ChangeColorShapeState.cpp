@@ -1,5 +1,10 @@
 #include "../include/ChangeColorShapeState.hpp"
 
+ChangeColorShapeState::ChangeColorShapeState(const sf::Color &color)
+    : m_color(color)
+{
+}
+
 void ChangeColorShapeState::HandleEvent(Canvas *canvas)
 {
     const auto shapes = canvas->GetAllSelectedShapes();
@@ -8,8 +13,6 @@ void ChangeColorShapeState::HandleEvent(Canvas *canvas)
     {
         return;
     }
-    for (const auto s : shapes)
-    {
-        canvas->ExecuteCommand(std::make_unique<ChangeColorCommandFill>(s, m_color));
-    }
+
+    canvas->ExecuteCommand(std::make_unique<ChangeColorCommandFill>(shapes, m_color));
 }

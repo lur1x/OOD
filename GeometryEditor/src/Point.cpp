@@ -1,6 +1,9 @@
 #include "../include/Point.hpp"
 
-Point::Point(float x, float y) : m_x(x), m_y(y) {};
+Point::Point(float x, float y)
+    : m_x(x), m_y(y)
+{
+}
 
 float Point::GetX() const
 {

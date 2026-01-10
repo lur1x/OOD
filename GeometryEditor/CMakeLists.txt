@@ -25,7 +25,14 @@ add_executable(GeometryEditor
     src/Button.cpp
     src/Panel.cpp
     src/ChangeColorCommandFill.cpp
-    src/ChangeColorThikness.cpp
+    src/ChangeColorThickness.cpp
+    src/ColorChangeVisitor.cpp
+    src/GroupShapesCommand.cpp
+    src/OutlineColotChangeVisitor.cpp
+    src/ShapeMemento.cpp
+    src/ThicknessChangeVisitor.cpp
+    src/UngroupShapesCommand.cpp
+
 )
 configure_file(${CMAKE_SOURCE_DIR}/include/arialmt.ttf ${CMAKE_CURRENT_BINARY_DIR}/arialmt.ttf COPYONLY)
 target_compile_definitions(GeometryEditor PRIVATE SFML_STATIC)

@@ -40,6 +40,20 @@ void Canvas::AddShape(std::shared_ptr<IDrawableShape> shape)
     m_shapes.push_back(std::move(shape));
 }
 
+bool Canvas::RemoveShape(const std::shared_ptr<IDrawableShape> &shape)
+{
+    unsigned id = shape->GetId();
+
+    auto matchId = [&](const auto &s)
+
+    { return s->GetId() == id; };
+
+    m_shapes.erase(std::remove_if(m_shapes.begin(), m_shapes.end(), matchId), m_shapes.end());
+    m_selected.erase(std::remove_if(m_selected.begin(), m_selected.end(), matchId), m_selected.end());
+
+    return true;
+}
+
 void Canvas::ClearShapes()
 {
     m_shapes.clear();
@@ -61,104 +75,95 @@ bool Canvas::HandleEvents()
             m_window.close();
             return false;
         }
+
         SetEvent(*event);
-        SelectEvent(*event);
+        SelectEvent();
 
         m_panel.HandleMouseEvent(*event);
 
+        UndoState();
+
         if (m_tool)
         {
-            // m_tool->HandleEvent(this, event.value());
             m_tool->HandleEvent(this);
 
             if (!m_panel.IsDragMode())
-
+            {
                 SetTool(nullptr);
+            }
         }
     }
 
     return true;
 }
 
-void Canvas::SelectEvent(const sf::Event &event)
+void Canvas::UndoState()
 {
-    if (auto mouseRelease = event.getIf<sf::Event::MouseButtonReleased>())
+    if (auto event = GetEvent(); event.has_value())
     {
-        if (mouseRelease->button == sf::Mouse::Button::Left)
+        sf::Event ev = event.value();
+
+        if (auto keyPress = ev.getIf<sf::Event::KeyPressed>() && sf::Keyboard::isKeyPressed(sf::Keyboard::Key::LControl) && sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Z) && !cmds.empty())
         {
-            sf::Vector2f clickPos = GetMousePosition();
+            auto cmd = std::move(cmds.back());
+            cmds.pop_back();
 
-            bool shift = sf::Keyboard::isKeyPressed(sf::Keyboard::Key::LShift);
-
-            auto hit = HitTest(clickPos);
-
-            const sf::Vector2f panelSize = m_panel.GetPanelSize();
-
-            if (clickPos.y <= panelSize.y)
-
-                return;
-
-            if (hit)
-            {
-                if (!shift)
-
-                    ClearSelected();
-
-                SelectShape(hit);
-
-                StartDragging(clickPos);
-            }
-
-            else if (!shift)
-
-                ClearSelected();
+            ClearSelected();
+            cmd->Undo();
         }
     }
 }
 
-// void Canvas::GroupSelectedShapes()
-// {
-//     if (m_selected.empty())
-//     {
-//         return;
-//     }
+void Canvas::SelectEvent()
+{
+    if (auto event = GetEvent(); event.has_value())
+    {
+        sf::Event ev = event.value();
 
-//     auto group = std::make_shared<CompositeShape>();
-//     for (auto &s : m_selected)
-//     {
-//         group->Add(s);
-//     }
+        if (auto mouseRelease = ev.getIf<sf::Event::MouseButtonReleased>())
+        {
+            if (mouseRelease->button == sf::Mouse::Button::Left)
+            {
+                sf::Vector2f clickPos = GetMousePosition();
 
-//     m_shapes.push_back(group);
-//     m_selected.clear();
-//     m_selected.push_back(group);
-// }
+                bool shift = sf::Keyboard::isKeyPressed(sf::Keyboard::Key::LShift);
+                auto hit = HitTest(clickPos);
 
-// void Canvas::UngroupSelectedShapes()
-// {
-//     std::vector<std::shared_ptr<IDrawableShape>> toAdd;
+                const sf::Vector2f panelSize = m_panel.GetPanelSize();
 
-//     for (auto &s : m_selected)
-//     {
-//         auto g = std::dynamic_pointer_cast<CompositeShape>(s);
-//         if (g)
-//         {
-//             for (auto &child : g->GetShapes())
-//             {
-//                 toAdd.push_back(child);
-//             }
-//             auto it = std::find(m_shapes.begin(), m_shapes.end(), s);
-//             if (it != m_shapes.end())
-//             {
-//                 m_shapes.erase(it);
-//             }
-//         }
-//     }
+                if (clickPos.y <= panelSize.y)
+                {
+                    return;
+                }
 
-//     m_shapes.insert(m_shapes.end(), toAdd.begin(), toAdd.end());
+                if (hit)
+                {
+                    if (!shift)
+                    {
+                        ClearSelected();
+                    }
 
-//     m_selected = toAdd;
-// }
+                    SelectShape(hit);
+
+                    StartDragging(clickPos);
+                }
+
+                else if (!shift)
+                {
+                    ClearSelected();
+                }
+            }
+        }
+
+        if (auto mouseRelease = ev.getIf<sf::Event::MouseButtonReleased>())
+        {
+            if (mouseRelease->button == sf::Mouse::Button::Left)
+            {
+                StopDragging();
+            }
+        }
+    }
+}
 
 bool Canvas::Render()
 {
@@ -175,14 +180,17 @@ bool Canvas::Render()
         const sf::RectangleShape frame = RenderFrame(bounds);
         m_window.draw(frame);
     }
+
     m_panel.DrawPanel();
     m_window.display();
+
     return true;
 }
 
 sf::RectangleShape Canvas::RenderFrame(const sf::FloatRect &bounds) const
 {
     sf::RectangleShape frame(bounds.size);
+
     frame.setPosition(bounds.position);
     frame.setFillColor(canvas::TRANSPARENT_COLOR);
     frame.setOutlineThickness(canvas::SELECTION_FRAME_THICKNESS);
@@ -197,6 +205,7 @@ std::shared_ptr<IDrawableShape> Canvas::HitTest(const sf::Vector2f &point) const
     {
         return nullptr;
     }
+
     for (auto it = m_shapes.rbegin(); it != m_shapes.rend(); ++it)
     {
         const sf::FloatRect bounds = (*it)->GetShape()->getGlobalBounds();
@@ -209,77 +218,63 @@ std::shared_ptr<IDrawableShape> Canvas::HitTest(const sf::Vector2f &point) const
     return nullptr;
 }
 
-std::vector<std::shared_ptr<IDrawableShape>> Canvas::GetAllSelectedShapes()
+std::vector<std::shared_ptr<IDrawableShape>> Canvas::GetAllSelectedShapes() const
 {
     auto shapes = GetSelected();
 
     std::vector<std::shared_ptr<IDrawableShape>> result;
 
     for (const auto &s : shapes)
-
+    {
         CollectShapes(s, result);
+    }
 
     return result;
 }
 
-void Canvas::CollectShapes(const std::shared_ptr<IDrawableShape> &shape, std::vector<std::shared_ptr<IDrawableShape>> &outShapes)
+void Canvas::CollectShapes(const std::shared_ptr<IDrawableShape> &shape, std::vector<std::shared_ptr<IDrawableShape>> &outShapes) const
 {
     auto group = std::dynamic_pointer_cast<CompositeShape>(shape);
 
     if (group)
-
+    {
         for (const auto &s : group->GetShapes())
-
+        {
             CollectShapes(s, outShapes);
+        }
+    }
 
     else
-
+    {
         outShapes.push_back(shape);
+    }
 }
-
-// void Canvas::AddNewShape(const sf::Event &event)
-// {
-//     if (event.is<sf::Event::KeyPressed>() &&
-//         (event.getIf<sf::Event::KeyPressed>()->scancode == sf::Keyboard::Scancode::Num1 ||
-//          event.getIf<sf::Event::KeyPressed>()->scancode == sf::Keyboard::Scancode::Num2 ||
-//          event.getIf<sf::Event::KeyPressed>()->scancode == sf::Keyboard::Scancode::Num3))
-
-//     {
-//         SetTool(std::make_unique<AddShapeState>());
-
-//         if (m_tool)
-//         {
-//             m_tool->HandleEvent(this, event);
-//         }
-//     }
-// }
-
-// void Canvas::ChangeShape(const sf::Event &event)
-// {
-//     if (event.is<sf::Event::KeyPressed>() &&
-//         sf::Keyboard::isKeyPressed(sf::Keyboard::Key::LControl))
-//     {
-//         auto keyEvent = event.getIf<sf::Event::KeyPressed>();
-//         if (keyEvent->scancode == sf::Keyboard::Scancode::C || keyEvent->scancode == sf::Keyboard::Scancode::X)
-//         {
-//             SetTool(std::make_unique<ChangeColorShapeState>());
-//         }
-
-//         if (keyEvent->scancode == sf::Keyboard::Scancode::Up || keyEvent->scancode == sf::Keyboard::Scancode::Down)
-//         {
-//             SetTool(std::make_unique<ChangeThicknessShapeState>());
-//         }
-//     }
-// }
 
 void Canvas::ExecuteCommand(std::unique_ptr<ICommand> cmd)
 {
     cmd->Execute();
+    cmds.push_back(std::move(cmd));
 }
 
 void Canvas::SetTool(std::unique_ptr<ITool> tool)
 {
     m_tool = std::move(tool);
+}
+
+std::shared_ptr<CompositeShape> Canvas::GroupShapes(const std::vector<std::shared_ptr<IDrawableShape>> &shapes)
+{
+    auto group = std::make_shared<CompositeShape>();
+
+    for (const auto &s : shapes)
+    {
+        group->Add(s);
+    }
+
+    m_shapes.push_back(group);
+    m_selected.clear();
+    m_selected.push_back(group);
+
+    return group;
 }
 
 void Canvas::ClearTool()
@@ -290,8 +285,9 @@ void Canvas::ClearTool()
 void Canvas::SelectShape(const std::shared_ptr<IDrawableShape> &shape)
 {
     if (std::find(m_selected.begin(), m_selected.end(), shape) == m_selected.end())
-
+    {
         m_selected.push_back(shape);
+    }
 }
 
 std::vector<std::shared_ptr<IDrawableShape>> Canvas::GetSelected() const
@@ -333,10 +329,12 @@ sf::Vector2f Canvas::GetLastMousePos() const
 void Canvas::GroupSelected()
 {
     auto group = std::make_shared<CompositeShape>();
+
     for (const auto &s : m_selected)
     {
         group->Add(s);
     }
+
     m_shapes.push_back(group);
     m_selected.clear();
     m_selected.push_back(group);
@@ -346,15 +344,18 @@ void Canvas::UngroupSelected()
 {
 
     std::vector<std::shared_ptr<IDrawableShape>> toAdd;
+
     for (auto &s : m_selected)
     {
         auto g = std::dynamic_pointer_cast<CompositeShape>(s);
+
         if (g)
         {
             for (auto &child : g->GetShapes())
             {
                 toAdd.push_back(child);
             }
+
             m_shapes.erase(std::remove(m_shapes.begin(), m_shapes.end(), s), m_shapes.end());
         }
     }
@@ -363,10 +364,31 @@ void Canvas::UngroupSelected()
     m_selected = toAdd;
 };
 
-std::optional<sf::Event> Canvas::GetEvent() const
-
+void Canvas::UngroupShapes(const std::vector<std::shared_ptr<IDrawableShape>> &shapes)
 {
+    std::vector<std::shared_ptr<IDrawableShape>> toAdd;
 
+    for (auto &s : shapes)
+    {
+        auto g = std::dynamic_pointer_cast<CompositeShape>(s);
+
+        if (g)
+        {
+            for (auto &child : g->GetShapes())
+            {
+                toAdd.push_back(child);
+            }
+
+            m_shapes.erase(std::remove(m_shapes.begin(), m_shapes.end(), s), m_shapes.end());
+        }
+    }
+
+    m_shapes.insert(m_shapes.end(), toAdd.begin(), toAdd.end());
+    m_selected = toAdd;
+}
+
+std::optional<sf::Event> Canvas::GetEvent() const
+{
     return m_event;
 }
 

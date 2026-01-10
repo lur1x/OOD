@@ -2,8 +2,9 @@
 
 #include <string>
 #include <unordered_map>
-#include <SFML/Graphics.hpp>
 #include <map>
+#include <SFML/Graphics.hpp>
+
 namespace window
 {
     const unsigned int WIDTH_SIZE = 800;
@@ -88,65 +89,43 @@ enum class Action
     SwitchMode,
 
     Thick1,
-
     Thick3,
-
     Thick5,
 
     ColorRed,
-
     ColorBlue,
-
     ColorWhite,
-
     ColorBlack,
 
     FillColorRed,
-
     FillColorBlue,
-
     FillColorWhite,
-
     FillColorBlack,
 
     AddRectangle,
-
     AddTriangle,
-
     AddCircle
-
 };
 
-const std::vector<std::pair<sf::String, Action>> BUTTONS = {
+const std::vector<std::pair<sf::String, Action>> BUTTONS =
+    {
+        {"Switch mode", Action::SwitchMode},
 
-    {"Switch mode", Action::SwitchMode},
+        {"Thickness 1", Action::Thick1},
+        {"Thickness 3", Action::Thick3},
+        {"Thickness 5", Action::Thick5},
 
-    {"Thickness 1", Action::Thick1},
+        {"Color red", Action::ColorRed},
+        {"Color blue", Action::ColorBlue},
+        {"Color white", Action::ColorWhite},
+        {"Color black", Action::ColorBlack},
 
-    {"Thickness 3", Action::Thick3},
+        {"Thick red", Action::FillColorRed},
+        {"Thick blue", Action::FillColorBlue},
+        {"Thick white", Action::FillColorWhite},
+        {"Thick black", Action::FillColorBlack},
 
-    {"Thickness 5", Action::Thick5},
-
-    {"Color red", Action::ColorRed},
-
-    {"Color blue", Action::ColorBlue},
-
-    {"Color white", Action::ColorWhite},
-
-    {"Color black", Action::ColorBlack},
-
-    {"Thick red", Action::FillColorRed},
-
-    {"Thick blue", Action::FillColorBlue},
-
-    {"Thick white", Action::FillColorWhite},
-
-    {"Thick black", Action::FillColorBlack},
-
-    {"Triangle", Action::AddTriangle},
-
-    {"Rectangle", Action::AddRectangle},
-
-    {"Circle", Action::AddCircle},
-
+        {"Triangle", Action::AddTriangle},
+        {"Rectangle", Action::AddRectangle},
+        {"Circle", Action::AddCircle},
 };

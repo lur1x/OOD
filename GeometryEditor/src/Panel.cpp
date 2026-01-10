@@ -3,7 +3,7 @@
 #include "../include/AddShapeState.hpp"
 #include "../include/ChangeThicknessShapeState.hpp"
 #include "../include/DragState.hpp"
-#include "../include/ChangeColorThikness.hpp"
+#include "../include/ChangeColorThickness.hpp"
 
 Panel::Panel(sf::RenderWindow &window, std::function<void(std::unique_ptr<ITool>)> setTool)
 
@@ -16,9 +16,7 @@ Panel::Panel(sf::RenderWindow &window, std::function<void(std::unique_ptr<ITool>
 
 void Panel::SetPanel()
 {
-
     sf::Vector2f buttonPos = sf::Vector2f(0, 0);
-
     const sf::Vector2f buttonSize = sf::Vector2f(100, 30);
 
     for (const auto &pair : BUTTONS)
@@ -40,7 +38,6 @@ void Panel::SetPanel()
             buttonPos.x = 0;
             buttonPos.y += 40;
         }
-
         else
         {
             buttonPos.x += 110;
@@ -78,7 +75,6 @@ void Panel::HandleMouseEvent(const sf::Event &event)
     {
         if (btn.IsClicked(m_window, event))
         {
-
             if (btn.onClick)
             {
                 btn.onClick();
@@ -89,10 +85,10 @@ void Panel::HandleMouseEvent(const sf::Event &event)
 
 std::unique_ptr<ITool> Panel::GetState(const enum Action &action)
 {
-
     if (action == Action::SwitchMode)
     {
         m_dragMode = !m_dragMode;
+
         if (m_dragMode)
         {
             return std::make_unique<DragState>(GetPanelSize());
@@ -107,68 +103,52 @@ std::unique_ptr<ITool> Panel::GetState(const enum Action &action)
     {
         return std::make_unique<DragState>(GetPanelSize());
     }
+
     switch (action)
-
     {
-
     case Action::ColorBlack:
-
         return std::make_unique<ChangeColorShapeState>(sf::Color::Black);
 
     case Action::ColorBlue:
-
         return std::make_unique<ChangeColorShapeState>(sf::Color::Blue);
 
     case Action::ColorRed:
-
         return std::make_unique<ChangeColorShapeState>(sf::Color::Red);
 
     case Action::ColorWhite:
-
         return std::make_unique<ChangeColorShapeState>(sf::Color::White);
 
     case Action::Thick1:
-
         return std::make_unique<ChangeThicknessShapeState>(1);
 
     case Action::Thick3:
-
         return std::make_unique<ChangeThicknessShapeState>(3);
 
     case Action::Thick5:
-
         return std::make_unique<ChangeThicknessShapeState>(5);
 
     case Action::FillColorBlack:
-
         return std::make_unique<ChangeColorThickness>(sf::Color::Black);
 
     case Action::FillColorBlue:
-
         return std::make_unique<ChangeColorThickness>(sf::Color::Blue);
 
     case Action::FillColorRed:
-
         return std::make_unique<ChangeColorThickness>(sf::Color::Red);
 
     case Action::FillColorWhite:
-
         return std::make_unique<ChangeColorThickness>(sf::Color::White);
 
     case Action::AddCircle:
-
         return std::make_unique<AddShapeState>(SHAPES_TYPE::CIRCLE_T, GetPanelSize());
 
     case Action::AddRectangle:
-
         return std::make_unique<AddShapeState>(SHAPES_TYPE::RECTANGLE_T, GetPanelSize());
 
     case Action::AddTriangle:
-
         return std::make_unique<AddShapeState>(SHAPES_TYPE::TRIANGLE_T, GetPanelSize());
 
     default:
-
         return nullptr;
     }
 }

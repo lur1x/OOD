@@ -1,12 +1,14 @@
 #pragma once
 
 #define _USE_MATH_DEFINES
-#include "Point.hpp"
-#include "IDrawableShape.hpp"
-#include "Constants.hpp"
+
 #include <memory>
 #include <cmath>
 #include <string>
+
+#include "Point.hpp"
+#include "IDrawableShape.hpp"
+#include "Constants.hpp"
 
 class SFMLCircleAdapter : public IDrawableShape
 {
@@ -21,7 +23,13 @@ public:
     bool Contains(const sf::Vector2f &point) const override;
     void Move(const sf::Vector2f &delta) override;
 
+    void Accept(IShapeVisitor &visitor) override;
+    std::vector<ShapeMemento> SaveState() const override;
+    void RestoreState(const std::vector<ShapeMemento> &lastState) override;
+
     std::shared_ptr<sf::Shape> GetShape() const override;
+
+    size_t GetStateSize() const override;
 
 private:
     std::shared_ptr<sf::CircleShape> m_circle;

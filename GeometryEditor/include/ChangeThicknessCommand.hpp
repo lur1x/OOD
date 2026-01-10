@@ -1,21 +1,18 @@
 #pragma once
 
 #include "ICommand.hpp"
-
 #include "IDrawableShape.hpp"
 
 class ChangeThicknessCommand : public ICommand
 {
 public:
-    ChangeThicknessCommand(const std::shared_ptr<IDrawableShape> &shape, const float newThickness)
+    ChangeThicknessCommand(const std::vector<std::shared_ptr<IDrawableShape>> &shapes, const float newThickness);
 
-        : m_shape(shape), m_newThickness(newThickness)
-    {
-    }
     void Execute() override;
+    void Undo() override;
 
 private:
-    std::shared_ptr<IDrawableShape> m_shape;
-
+    std::vector<std::shared_ptr<IDrawableShape>> m_shapes;
     float m_newThickness;
+    std::vector<std::vector<ShapeMemento>> m_before;
 };

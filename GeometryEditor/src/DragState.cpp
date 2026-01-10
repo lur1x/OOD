@@ -1,10 +1,18 @@
 #include "../include/DragState.hpp"
 
+DragState::DragState(const sf::Vector2f &startPos)
+    : m_startPos(startPos)
+{
+}
+
 void DragState::HandleEvent(Canvas *canvas)
 {
     auto eventOpt = canvas->GetEvent();
+
     if (!eventOpt)
+    {
         return;
+    }
 
     const sf::Event &event = *eventOpt;
 
@@ -26,6 +34,7 @@ void DragState::HandleEvent(Canvas *canvas)
                 canvas->SelectShape(hit);
                 canvas->StartDragging(clickPos);
             }
+
             else if (!shift)
             {
                 canvas->ClearSelected();
@@ -33,11 +42,18 @@ void DragState::HandleEvent(Canvas *canvas)
         }
     }
 
-    if (auto mouseRelease = event.getIf<sf::Event::MouseButtonReleased>())
+    if (auto mouseRelease = event.getIf<sf::Event::MouseButtonPressed>())
     {
-        if (mouseRelease->button == sf::Mouse::Button::Left)
+        if (mouseRelease->button == sf::Mouse::Button::Left && canvas->IsDragging())
         {
-            canvas->StopDragging();
+            auto shapes = canvas->GetSelected();
+
+            if (!shapes.empty())
+            {
+                m_activeCommand = std::make_unique<DragCommand>(shapes);
+            }
+
+            return;
         }
     }
 
@@ -53,28 +69,54 @@ void DragState::HandleEvent(Canvas *canvas)
                 const sf::FloatRect bounds = s->GetShape()->getGlobalBounds();
 
                 if (bounds.position.y + delta.y <= m_startPos.y || bounds.position.y + delta.y + bounds.size.y >= window::HEIGHT_SIZE)
-
+                {
                     delta.y = 0;
+                }
 
                 if (bounds.position.x + delta.x <= 0 || bounds.position.x + delta.x + bounds.size.x >= window::WIDTH_SIZE)
-
+                {
                     delta.x = 0;
-                canvas->ExecuteCommand(std::make_unique<DragCommand>(s, delta));
+                }
+
+                s->Move(delta);
+
+                if (delta.x != 0 || delta.y != 0)
+                {
+                    isDragged = true;
+                }
             }
+
             canvas->SetLastMousePos(currPos);
+
+            return;
         }
     }
+
+    if (auto mousePress = event.getIf<sf::Event::MouseButtonReleased>())
+    {
+        if (mousePress->button == sf::Mouse::Button::Left)
+        {
+            if (m_activeCommand && isDragged)
+            {
+                canvas->ExecuteCommand(std::move(m_activeCommand));
+            }
+
+            return;
+        }
+    }
+
     if (auto keyPress = event.getIf<sf::Event::KeyPressed>())
     {
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::LControl))
         {
             if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::G))
             {
-                canvas->GroupSelected();
+                canvas->ExecuteCommand(std::make_unique<GroupShapesCommand>(canvas));
             }
+
             else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::U))
             {
-                canvas->UngroupSelected();
+                canvas->ExecuteCommand(std::make_unique<UngroupShapesCommand>(canvas));
             }
         }
     }

@@ -5,11 +5,9 @@
 #include "Canvas.hpp"
 
 class ChangeColorThickness : public ITool
-
 {
-
 public:
-    ChangeColorThickness(const sf::Color &color) : m_color(color) {}
+    ChangeColorThickness(const sf::Color &color);
 
     void HandleEvent(Canvas *canvas) override;
 

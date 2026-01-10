@@ -1,5 +1,9 @@
 #pragma once
+
 #include <SFML/Graphics.hpp>
+
+#include <optional>
+
 #include "IDrawableShape.hpp"
 #include "CompositeShape.hpp"
 #include "SFMLCircleAdapter.hpp"
@@ -8,8 +12,8 @@
 #include "ICommand.hpp"
 #include "ITool.hpp"
 #include "Panel.hpp"
-#include <optional>
 #include "Constants.hpp"
+
 class Canvas
 {
 public:
@@ -17,12 +21,14 @@ public:
 
     bool IsOpen() const;
     void Draw();
+    
     void AddShape(std::shared_ptr<IDrawableShape> shape);
+    bool RemoveShape(const std::shared_ptr<IDrawableShape> &shape);
     void ClearShapes();
 
     sf::Vector2f GetMousePosition() const;
     std::shared_ptr<IDrawableShape> HitTest(const sf::Vector2f &point) const;
-    std::vector<std::shared_ptr<IDrawableShape>> GetAllSelectedShapes();
+    std::vector<std::shared_ptr<IDrawableShape>> GetAllSelectedShapes() const;
     void ExecuteCommand(std::unique_ptr<ICommand> cmd);
     void ClearSelected();
 
@@ -35,6 +41,8 @@ public:
 
     void GroupSelected();
     void UngroupSelected();
+    std::shared_ptr<CompositeShape> GroupShapes(const std::vector<std::shared_ptr<IDrawableShape>> &shapes);
+    void UngroupShapes(const std::vector<std::shared_ptr<IDrawableShape>> &shapes);
 
     void SelectShape(const std::shared_ptr<IDrawableShape> &shape);
 
@@ -44,9 +52,12 @@ public:
 
 private:
     sf::RenderWindow m_window;
-    std::vector<std::shared_ptr<IDrawableShape>> m_shapes;
 
+    std::vector<std::shared_ptr<IDrawableShape>> m_shapes;
     std::vector<std::shared_ptr<IDrawableShape>> m_selected;
+
+    std::vector<std::unique_ptr<ICommand>> cmds;
+
     bool m_dragging = false;
 
     sf::Vector2f m_lastMousePos;
@@ -61,14 +72,11 @@ private:
 
     bool HandleEvents();
 
-    // void GroupSelectedShapes();
-    // void UngroupSelectedShapes();
-
     bool Render();
-
     sf::RectangleShape RenderFrame(const sf::FloatRect &bounds) const;
 
-    void SelectEvent(const sf::Event &event);
+    void SelectEvent();
 
-    void CollectShapes(const std::shared_ptr<IDrawableShape> &shape, std::vector<std::shared_ptr<IDrawableShape>> &outShapes);
+    void CollectShapes(const std::shared_ptr<IDrawableShape> &shape, std::vector<std::shared_ptr<IDrawableShape>> &outShapes) const;
+    void UndoState();
 };

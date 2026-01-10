@@ -1,12 +1,14 @@
 #pragma once
+
+#include <memory>
+#include <string>
+#include <vector>
+
 #include "IDrawableShape.hpp"
 #include "Constants.hpp"
 #include "SFMLCircleAdapter.hpp"
 #include "SFMLRectangleAdapter.hpp"
 #include "SFMLTriangleAdapter.hpp"
-#include <memory>
-#include <string>
-#include <vector>
 
 class ShapeFactory
 {

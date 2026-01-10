@@ -7,7 +7,7 @@
 class ChangeThicknessShapeState : public ITool
 {
 public:
-    ChangeThicknessShapeState(const unsigned int thickness) : m_thickness(thickness) {}
+    ChangeThicknessShapeState(const unsigned int thickness);
 
     void HandleEvent(Canvas *canvas) override;
 

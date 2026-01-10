@@ -1,5 +1,10 @@
 #include "../include/AddShapeState.hpp"
 
+AddShapeState::AddShapeState(const enum SHAPES_TYPE &shape_type, const sf::Vector2f &startPos)
+        : m_shape_type(shape_type), m_startPos(startPos) 
+{
+}
+
 Point ToPoint(const sf::Vector2f &vec)
 {
     return Point(vec.x, vec.y);
@@ -10,17 +15,12 @@ void AddShapeState::HandleEvent(Canvas *canvas)
     std::shared_ptr<IDrawableShape> newShape;
 
     switch (m_shape_type)
-
     {
-
     case SHAPES_TYPE::CIRCLE_T:
-
         newShape = std::make_shared<SFMLCircleAdapter>(Point(0, m_startPos.y), 50.0f);
-
         break;
 
     case SHAPES_TYPE::RECTANGLE_T:
-
         newShape = std::make_shared<SFMLRectangleAdapter>(
             Point(0, m_startPos.y),
             100.0f,
@@ -28,7 +28,6 @@ void AddShapeState::HandleEvent(Canvas *canvas)
         break;
 
     case SHAPES_TYPE::TRIANGLE_T:
-
         newShape = std::make_shared<SFMLTriangleAdapter>(
             Point(0, m_startPos.y),
             Point(0, m_startPos.y + 100),
@@ -36,7 +35,6 @@ void AddShapeState::HandleEvent(Canvas *canvas)
         break;
 
     default:
-
         return;
     }
 

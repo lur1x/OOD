@@ -1,8 +1,10 @@
 #pragma once
+
+#include <fstream>
+
 #include "IDrawableShape.hpp"
 #include "Constants.hpp"
 #include "ShapeFactory.hpp"
-#include <fstream>
 
 class ShapeParser
 {

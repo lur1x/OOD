@@ -48,6 +48,7 @@ bool Button::IsClicked(const sf::RenderWindow &window, const sf::Event &event) c
     {
         return false;
     }
+
     if (event.is<sf::Event::MouseButtonPressed>())
     {
         auto mouseEvent = event.getIf<sf::Event::MouseButtonPressed>();

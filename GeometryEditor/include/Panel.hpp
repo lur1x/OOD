@@ -1,15 +1,16 @@
 #pragma once
 
 #include <vector>
+
 #include "Button.hpp"
 #include "Constants.hpp"
 #include "ITool.hpp"
 
 class Panel
 {
-
 public:
     Panel(sf::RenderWindow &window, std::function<void(std::unique_ptr<ITool>)> setTool);
+
     void DrawPanel();
     void HandleMouseEvent(const sf::Event &event);
     bool IsDragMode() const;

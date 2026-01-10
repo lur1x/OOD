@@ -5,6 +5,7 @@ SFMLTriangleAdapter::SFMLTriangleAdapter(const Point &p1, const Point &p2, const
 {
 
     m_triangle = std::make_shared<sf::ConvexShape>(3);
+
     m_triangle->setPoint(0, sf::Vector2f(p1.GetX(), p1.GetY()));
     m_triangle->setPoint(1, sf::Vector2f(p2.GetX(), p2.GetY()));
     m_triangle->setPoint(2, sf::Vector2f(p3.GetX(), p3.GetY()));
@@ -57,7 +58,9 @@ bool SFMLTriangleAdapter::Contains(const sf::Vector2f &point) const
     float denominator = ((v2.y - v3.y) * (v1.x - v3.x) + (v3.x - v2.x) * (v1.y - v3.y));
 
     if (std::fabs(denominator) < 1e-6)
+    {
         return false;
+    }
 
     float a = ((v2.y - v3.y) * (point.x - v3.x) + (v3.x - v2.x) * (point.y - v3.y)) / denominator;
     float b = ((v3.y - v1.y) * (point.x - v3.x) + (v1.x - v3.x) * (point.y - v3.y)) / denominator;
@@ -75,4 +78,37 @@ void SFMLTriangleAdapter::Move(const sf::Vector2f &delta)
     m_triangle->setPoint(0, sf::Vector2f(m_p1.GetX(), m_p1.GetY()));
     m_triangle->setPoint(1, sf::Vector2f(m_p2.GetX(), m_p2.GetY()));
     m_triangle->setPoint(2, sf::Vector2f(m_p3.GetX(), m_p3.GetY()));
+}
+
+void SFMLTriangleAdapter::Accept(IShapeVisitor &visitor)
+{
+    visitor.Visit(*this);
+}
+
+std::vector<ShapeMemento> SFMLTriangleAdapter::SaveState() const
+{
+    std::vector<ShapeMemento> states(1);
+    const std::shared_ptr<sf::Shape> s = m_triangle;
+
+    states[0].SetFillColor(s->getFillColor());
+    states[0].SetOutlineColor(s->getOutlineColor());
+    states[0].SetThickness(s->getOutlineThickness());
+    states[0].SetPosition(s->getPosition());
+
+    return states;
+}
+
+void SFMLTriangleAdapter::RestoreState(const std::vector<ShapeMemento> &lastState)
+{
+    const std::shared_ptr<sf::Shape> s = m_triangle;
+
+    s->setFillColor(lastState[0].GetFillColor());
+    s->setOutlineColor(lastState[0].GetOutlineColor());
+    s->setOutlineThickness(lastState[0].GetThickness());
+    s->setPosition(lastState[0].GetPosition());
+}
+
+size_t SFMLTriangleAdapter::GetStateSize() const
+{
+    return 1;
 }

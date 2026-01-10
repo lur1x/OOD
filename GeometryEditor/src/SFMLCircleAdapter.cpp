@@ -53,3 +53,36 @@ void SFMLCircleAdapter::Move(const sf::Vector2f &delta)
 
     m_circle->move(delta);
 }
+
+void SFMLCircleAdapter::Accept(IShapeVisitor &visitor)
+{
+    visitor.Visit(*this);
+}
+
+std::vector<ShapeMemento> SFMLCircleAdapter::SaveState() const
+{
+    std::vector<ShapeMemento> states(1);
+    const std::shared_ptr<sf::Shape> s = m_circle;
+
+    states[0].SetFillColor(s->getFillColor());
+    states[0].SetOutlineColor(s->getOutlineColor());
+    states[0].SetThickness(s->getOutlineThickness());
+    states[0].SetPosition(s->getPosition());
+
+    return states;
+}
+
+void SFMLCircleAdapter::RestoreState(const std::vector<ShapeMemento> &lastState)
+{
+    const std::shared_ptr<sf::Shape> s = m_circle;
+
+    s->setFillColor(lastState[0].GetFillColor());
+    s->setOutlineColor(lastState[0].GetOutlineColor());
+    s->setOutlineThickness(lastState[0].GetThickness());
+    s->setPosition(lastState[0].GetPosition());
+}
+
+size_t SFMLCircleAdapter::GetStateSize() const
+{
+    return 1;
+}

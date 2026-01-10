@@ -48,20 +48,24 @@ const std::vector<std::shared_ptr<IDrawableShape>> &CompositeShape::GetShapes() 
 float CompositeShape::GetArea() const
 {
     float sum = 0;
+
     for (auto &s : m_shapes)
     {
         sum += s->GetArea();
     }
+
     return sum;
 }
 
 float CompositeShape::GetPerimeter() const
 {
     float sum = 0;
+
     for (auto &s : m_shapes)
     {
         sum += s->GetPerimeter();
     }
+
     return sum;
 }
 
@@ -73,10 +77,12 @@ std::string CompositeShape::GetName() const
 std::string CompositeShape::ToString() const
 {
     std::string out = output::GROUP_START + output::NEWLINE;
+
     for (auto &s : m_shapes)
     {
         out += s->ToString() + output::NEWLINE;
     }
+
     return out + output::GROUP_END;
 }
 
@@ -86,11 +92,11 @@ sf::FloatRect CompositeShape::GetBounds() const
     {
         return sf::FloatRect();
     }
+
     sf::FloatRect bounds = m_shapes.front()->GetShape()->getGlobalBounds();
 
     for (auto &c : m_shapes)
     {
-
         sf::FloatRect child = c->GetShape()->getGlobalBounds();
 
         float left = std::min(bounds.position.x, child.position.x);
@@ -102,4 +108,85 @@ sf::FloatRect CompositeShape::GetBounds() const
     }
 
     return bounds;
+}
+
+void CompositeShape::Accept(IShapeVisitor &visitor)
+{
+    return;
+}
+
+std::vector<std::shared_ptr<IDrawableShape>> CompositeShape::GetAllShapes()
+{
+    std::vector<std::shared_ptr<IDrawableShape>> result;
+
+    for (auto s : m_shapes)
+    {
+        CollectShapes(s, result);
+    }
+
+    return result;
+}
+
+void CompositeShape::CollectShapes(const std::shared_ptr<IDrawableShape> &shape, std::vector<std::shared_ptr<IDrawableShape>> &outShapes)
+{
+    auto group = std::dynamic_pointer_cast<CompositeShape>(shape);
+
+    if (group)
+    {
+        for (const auto &s : group->GetShapes())
+        {
+            CollectShapes(s, outShapes);
+        }
+    }
+    else
+    {
+        outShapes.push_back(shape);
+    }
+}
+
+std::vector<ShapeMemento> CompositeShape::SaveState() const
+{
+    std::vector<ShapeMemento> result;
+    result.reserve(GetStateSize());
+
+    ShapeMemento own;
+    result.push_back(own);
+
+    for (auto &child : m_shapes)
+    {
+        auto cs = child->SaveState();
+
+        result.insert(result.end(), cs.begin(), cs.end());
+    }
+
+    return result;
+}
+
+void CompositeShape::RestoreState(const std::vector<ShapeMemento> &lastState)
+{
+    size_t idx = 1;
+
+    for (auto &child : m_shapes)
+    {
+        const size_t sz = child->GetStateSize();
+
+        std::vector<ShapeMemento> sub(
+            lastState.begin() + idx,
+            lastState.begin() + idx + sz);
+
+        child->RestoreState(sub);
+
+        idx += sz;
+    }
+}
+
+size_t CompositeShape::GetStateSize() const
+{
+    size_t sum = 1;
+
+    for (auto &s : m_shapes)
+    {
+        sum += s->GetStateSize();
+    }
+    return sum;
 }

@@ -1,9 +1,11 @@
 #pragma once
+
+#include <memory>
+#include <cmath>
+
 #include "Point.hpp"
 #include "IDrawableShape.hpp"
 #include "Constants.hpp"
-#include <memory>
-#include <cmath>
 
 class SFMLRectangleAdapter : public IDrawableShape
 {
@@ -17,6 +19,11 @@ public:
 
     bool Contains(const sf::Vector2f &point) const override;
     void Move(const sf::Vector2f &delta) override;
+
+    void Accept(IShapeVisitor &visitor) override;
+    std::vector<ShapeMemento> SaveState() const override;
+    void RestoreState(const std::vector<ShapeMemento> &lastState) override;
+    size_t GetStateSize() const override;
 
     std::shared_ptr<sf::Shape> GetShape() const override;
 
