@@ -27,6 +27,9 @@ public:
 
     std::shared_ptr<sf::Shape> GetShape() const override;
 
+    void SerializeToBinary(std::ostream &out) const override;
+    void SerializeToText(std::ostream &out) const override;
+
 private:
     std::shared_ptr<sf::RectangleShape> m_rectangle;
     Point m_topLeft;

@@ -112,3 +112,55 @@ size_t SFMLTriangleAdapter::GetStateSize() const
 {
     return 1;
 }
+
+void SFMLTriangleAdapter::SerializeToBinary(std::ostream &out) const
+{
+    const auto shape = m_triangle;
+    SHAPES_TYPE type = SHAPES_TYPE::TRIANGLE_T;
+    out.write(reinterpret_cast<const char *>(&type), sizeof(type));
+
+    sf::Vector2f pos = shape->getPosition();
+    out.write(reinterpret_cast<const char *>(&pos.x), sizeof(pos.x));
+    out.write(reinterpret_cast<const char *>(&pos.y), sizeof(pos.y));
+
+    Point p1 = m_p1, p2 = m_p2, p3 = m_p3;
+
+    float p1X = m_p1.GetX();
+    float p1Y = m_p1.GetY();
+    float p2X = m_p2.GetX();
+    float p2Y = m_p2.GetY();
+    float p3X = m_p3.GetX();
+    float p3Y = m_p3.GetY();
+    out.write(reinterpret_cast<const char *>(&p1X), sizeof(p1X));
+    out.write(reinterpret_cast<const char *>(&p1Y), sizeof(p1Y));
+    out.write(reinterpret_cast<const char *>(&p2X), sizeof(p2X));
+    out.write(reinterpret_cast<const char *>(&p2Y), sizeof(p2Y));
+    out.write(reinterpret_cast<const char *>(&p3X), sizeof(p3X));
+    out.write(reinterpret_cast<const char *>(&p3Y), sizeof(p3Y));
+
+    uint32_t color = shape->getOutlineColor().toInteger();
+    out.write(reinterpret_cast<const char *>(&color), sizeof(color));
+
+    float thickness = shape->getOutlineThickness();
+    out.write(reinterpret_cast<const char *>(&thickness), sizeof(thickness));
+
+    uint32_t colorFill = shape->getFillColor().toInteger();
+    out.write(reinterpret_cast<const char *>(&colorFill), sizeof(colorFill));
+}
+
+void SFMLTriangleAdapter::SerializeToText(std::ostream &out) const
+{
+    const auto shape = m_triangle;
+    out << input::TRIANGLE << ' ';
+
+    sf::Vector2f pos = shape->getPosition();
+    out << pos.x << ' ' << pos.y << ' ';
+
+    Point p1 = m_p1, p2 = m_p2, p3 = m_p3;
+    out << p1.GetX() << ' ' << p1.GetY() << ' ' << p2.GetX() << ' ' << p2.GetY() << ' ' << p3.GetX() << ' ' << p3.GetY() << ' ';
+
+    uint32_t color = shape->getOutlineColor().toInteger();
+    float thickness = shape->getOutlineThickness();
+    uint32_t colorFill = shape->getFillColor().toInteger();
+    out << color << ' ' << thickness << ' ' << colorFill << '\n';
+}

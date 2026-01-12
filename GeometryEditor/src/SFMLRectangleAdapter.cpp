@@ -87,3 +87,48 @@ size_t SFMLRectangleAdapter::GetStateSize() const
 {
     return 1;
 }
+
+void SFMLRectangleAdapter::SerializeToBinary(std::ostream &out) const
+{
+    const auto shape = m_rectangle;
+    SHAPES_TYPE type = SHAPES_TYPE::RECTANGLE_T;
+    out.write(reinterpret_cast<const char *>(&type), sizeof(type));
+
+    sf::Vector2f pos = shape->getPosition();
+    out.write(reinterpret_cast<const char *>(&pos.x), sizeof(pos.x));
+    out.write(reinterpret_cast<const char *>(&pos.y), sizeof(pos.y));
+
+    float topLeftX = m_topLeft.GetX();
+    float topLeftY = m_topLeft.GetY();
+
+    out.write(reinterpret_cast<const char *>(&topLeftX), sizeof(topLeftX));
+    out.write(reinterpret_cast<const char *>(&topLeftY), sizeof(topLeftY));
+
+    out.write(reinterpret_cast<const char *>(&m_width), sizeof(m_width));
+    out.write(reinterpret_cast<const char *>(&m_height), sizeof(m_height));
+
+    uint32_t color = shape->getOutlineColor().toInteger();
+    out.write(reinterpret_cast<const char *>(&color), sizeof(color));
+
+    float thickness = shape->getOutlineThickness();
+    out.write(reinterpret_cast<const char *>(&thickness), sizeof(thickness));
+
+    uint32_t colorFill = shape->getFillColor().toInteger();
+    out.write(reinterpret_cast<const char *>(&colorFill), sizeof(colorFill));
+}
+
+void SFMLRectangleAdapter::SerializeToText(std::ostream &out) const
+{
+    const auto shape = m_rectangle;
+    out << input::RECTANGLE << ' ';
+
+    sf::Vector2f pos = shape->getPosition();
+    out << pos.x << ' ' << pos.y << ' ';
+    out << m_topLeft.GetX() << ' ' << m_topLeft.GetY() << ' '
+        << m_width << ' ' << m_height << ' ';
+
+    uint32_t color = shape->getOutlineColor().toInteger();
+    float thickness = shape->getOutlineThickness();
+    uint32_t colorFill = shape->getFillColor().toInteger();
+    out << color << ' ' << thickness << ' ' << colorFill << '\n';
+}

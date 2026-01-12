@@ -31,6 +31,9 @@ public:
 
     void CollectShapes(const std::shared_ptr<IDrawableShape> &shape, std::vector<std::shared_ptr<IDrawableShape>> &outShapes);
 
+    void SerializeToBinary(std::ostream &out) const override;
+    void SerializeToText(std::ostream &out) const override;
+
 private:
     std::vector<std::shared_ptr<IDrawableShape>> m_shapes;
 };

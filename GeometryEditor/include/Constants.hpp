@@ -17,9 +17,15 @@ namespace input
     const std::string INPUT_FILENAME = "../input.txt";
     const std::string OUTPUT_FILENAME = "../output.txt";
 
+    const std::string BIN_FILENAME = "../shapes.bin";
+    const std::string TEXT_FILENAME = "../shapes.txt";
+    const std::string FONT_FILENAME = "../include/arialmt.ttf";
+
     const std::string RECTANGLE = "RECTANGLE";
     const std::string CIRCLE = "CIRCLE";
     const std::string TRIANGLE = "TRIANGLE";
+
+    const std::string COMPOSITE = "COMPOSITE:";
 }
 
 namespace output
@@ -52,13 +58,19 @@ namespace messages
     const std::string CANVAS_INITIALIZATION_FAILED = "Failed to initialize canvas (SFML window).";
     const std::string FILES_CLOSED_UNEXPECTEDLY = "Input or output files are closed unexpectedly.";
 
+    const std::string ATTEMPTING_LOAD_BIN = "Attempting to load from binary file: ";
+    const std::string ATTEMPTING_LOAD_TXT = "Attempting to load from text file: ";
+    const std::string SAVING_SHAPES_BIN = "Saving shapes to binary file: ";
+    const std::string SAVING_SHAPES_TXT = "Saving shapes to text file: ";
+    const std::string SHAPES_SAVED_SUCCESS = "Shapes saved successfully!";
+
 }
 namespace canvas
 {
     const unsigned int FRAME_RATE = 60;
     const float SELECTION_FRAME_THICKNESS = 2.0f;
     const sf::Color BACKGROUND_COLOR = sf::Color::White;
-    const sf::Color SELECTION_FRAME_COLOR = sf::Color::Red;
+    const sf::Color SELECTION_FRAME_COLOR = sf::Color::Green;
     const sf::Color TRANSPARENT_COLOR = sf::Color::Transparent;
 }
 
@@ -75,22 +87,25 @@ enum class SHAPES_TYPE
 {
     CIRCLE_T = 0,
     RECTANGLE_T,
-    TRIANGLE_T
+    TRIANGLE_T,
+    COMPOSITE_T,
+    NONE
 };
 
 const std::unordered_map<std::string, SHAPES_TYPE> SHAPES_MAP =
     {
         {input::RECTANGLE, SHAPES_TYPE::RECTANGLE_T},
         {input::CIRCLE, SHAPES_TYPE::CIRCLE_T},
-        {input::TRIANGLE, SHAPES_TYPE::TRIANGLE_T}};
+        {input::TRIANGLE, SHAPES_TYPE::TRIANGLE_T},
+        {input::COMPOSITE, SHAPES_TYPE::COMPOSITE_T}};
 
 enum class Action
 {
     SwitchMode,
 
-    Thick1,
-    Thick3,
-    Thick5,
+    AddRectangle,
+    AddTriangle,
+    AddCircle,
 
     ColorRed,
     ColorBlue,
@@ -102,18 +117,24 @@ enum class Action
     FillColorWhite,
     FillColorBlack,
 
-    AddRectangle,
-    AddTriangle,
-    AddCircle
+    Thick1,
+    Thick3,
+    Thick5,
+
+    LoadLastShapesBin,
+    LoadLastShapesTxt,
+
+    SaveShapesBin,
+    SaveShapesTxt
 };
 
 const std::vector<std::pair<sf::String, Action>> BUTTONS =
     {
         {"Switch mode", Action::SwitchMode},
 
-        {"Thickness 1", Action::Thick1},
-        {"Thickness 3", Action::Thick3},
-        {"Thickness 5", Action::Thick5},
+        {"Triangle", Action::AddTriangle},
+        {"Rectangle", Action::AddRectangle},
+        {"Circle", Action::AddCircle},
 
         {"Color red", Action::ColorRed},
         {"Color blue", Action::ColorBlue},
@@ -125,7 +146,12 @@ const std::vector<std::pair<sf::String, Action>> BUTTONS =
         {"Thick white", Action::FillColorWhite},
         {"Thick black", Action::FillColorBlack},
 
-        {"Triangle", Action::AddTriangle},
-        {"Rectangle", Action::AddRectangle},
-        {"Circle", Action::AddCircle},
-};
+        {"Thickness 1", Action::Thick1},
+        {"Thickness 3", Action::Thick3},
+        {"Thickness 5", Action::Thick5},
+
+        {"Load bin", Action::LoadLastShapesBin},
+        {"Load txt", Action::LoadLastShapesTxt},
+
+        {"Save bin", Action::SaveShapesBin},
+        {"Save txt", Action::SaveShapesTxt}};

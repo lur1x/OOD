@@ -2,6 +2,8 @@
 
 #include <SFML/Graphics.hpp>
 
+#include <fstream>
+
 #include "IShape.hpp"
 #include "IShapeVisitor.hpp"
 #include "ShapeMemento.hpp"
@@ -22,7 +24,15 @@ public:
     virtual size_t GetStateSize() const = 0;
     unsigned int GetId() const { return m_id; }
 
+    bool InGroup() { return inGroup; }
+    void SetInGroup(const bool group) { inGroup = group; }
+
+    virtual void SerializeToBinary(std::ostream &out) const = 0;
+    virtual void SerializeToText(std::ostream &out) const = 0;
+
 private:
     unsigned int m_id;
     inline static unsigned int s_nextId = 0;
+
+    bool inGroup;
 };

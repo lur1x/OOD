@@ -27,10 +27,9 @@ void ChangeColorCommand::Undo()
         return;
     }
 
-    OutlineColorChangeVisitor visitor(m_before[0][0].GetOutlineColor());
-
-    for (auto &s : m_shapes)
+    for (size_t i = 0; i < m_shapes.size(); i++)
     {
-        s->Accept(visitor);
+        OutlineColorChangeVisitor visitor(m_before[i][0].GetOutlineColor());
+        m_shapes[i]->Accept(visitor);
     }
 }

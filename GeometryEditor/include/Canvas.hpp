@@ -14,6 +14,10 @@
 #include "Panel.hpp"
 #include "Constants.hpp"
 
+#include "IShapeStrategy.hpp"
+#include "BinaryShapeStrategy.hpp"
+#include "TxtShapeStrategy.hpp"
+
 class Canvas
 {
 public:
@@ -21,10 +25,11 @@ public:
 
     bool IsOpen() const;
     void Draw();
-    
+
     void AddShape(std::shared_ptr<IDrawableShape> shape);
     bool RemoveShape(const std::shared_ptr<IDrawableShape> &shape);
     void ClearShapes();
+    std::vector<std::shared_ptr<IDrawableShape>> GetShapes() const;
 
     sf::Vector2f GetMousePosition() const;
     std::shared_ptr<IDrawableShape> HitTest(const sf::Vector2f &point) const;
@@ -47,8 +52,12 @@ public:
     void SelectShape(const std::shared_ptr<IDrawableShape> &shape);
 
     std::vector<std::shared_ptr<IDrawableShape>> GetSelected() const;
-
     std::optional<sf::Event> GetEvent() const;
+
+    void ClearCanvas();
+    void ClearTool();
+
+    void SaveToFile(const std::string &filename, IShapeStrategy &serializer);
 
 private:
     sf::RenderWindow m_window;
@@ -65,10 +74,10 @@ private:
     Panel m_panel;
     std::optional<sf::Event> m_event;
 
+    BinaryShapeStrategy m_strategy;
+
     void SetEvent(const sf::Event &event);
     void SetTool(std::unique_ptr<ITool> tool);
-
-    void ClearTool();
 
     bool HandleEvents();
 
@@ -79,4 +88,6 @@ private:
 
     void CollectShapes(const std::shared_ptr<IDrawableShape> &shape, std::vector<std::shared_ptr<IDrawableShape>> &outShapes) const;
     void UndoState();
+
+    void SaveState();
 };

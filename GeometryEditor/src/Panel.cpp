@@ -4,12 +4,16 @@
 #include "../include/ChangeThicknessShapeState.hpp"
 #include "../include/DragState.hpp"
 #include "../include/ChangeColorThickness.hpp"
+#include "../include/LoadBinState.hpp"
+#include "../include/LoadTxtState.hpp"
+#include "../include/SaveBinState.hpp"
+#include "../include/SaveTxtState.hpp"
 
 Panel::Panel(sf::RenderWindow &window, std::function<void(std::unique_ptr<ITool>)> setTool)
 
     : m_window(window), m_setTool(setTool)
 {
-    m_font.openFromFile("../include/arialmt.ttf");
+    m_font.openFromFile(input::FONT_FILENAME);
 
     SetPanel();
 }
@@ -18,6 +22,8 @@ void Panel::SetPanel()
 {
     sf::Vector2f buttonPos = sf::Vector2f(0, 0);
     const sf::Vector2f buttonSize = sf::Vector2f(100, 30);
+
+    m_buttons.clear();
 
     for (const auto &pair : BUTTONS)
     {
@@ -33,7 +39,7 @@ void Panel::SetPanel()
 
         m_buttons.push_back(btn);
 
-        if (buttonPos.x + 220 >= static_cast<float>(window::WIDTH_SIZE))
+        if (buttonPos.x + buttonSize.x + 110 >= static_cast<float>(window::WIDTH_SIZE))
         {
             buttonPos.x = 0;
             buttonPos.y += 40;
@@ -44,9 +50,21 @@ void Panel::SetPanel()
         }
     }
 
+    float maxBottom = 0;
+    for (const auto &btn : m_buttons)
+    {
+        float bottom = btn.GetPosition().y + btn.GetSize().y;
+        if (bottom > maxBottom)
+        {
+            maxBottom = bottom;
+        }
+    }
+
+    float panelHeight = maxBottom + 20;
+
     m_rectPanel.setPosition(sf::Vector2f(0, 0));
-    m_rectPanel.setSize(sf::Vector2f(window::HEIGHT_SIZE, buttonPos.y + buttonSize.y + 20));
-    m_rectPanel.setFillColor(sf::Color(128, 128, 128));
+    m_rectPanel.setSize(sf::Vector2f(window::WIDTH_SIZE, buttonPos.y + buttonSize.y + 20));
+    m_rectPanel.setFillColor(sf::Color(70, 190, 180));
 }
 
 void Panel::DrawPanel()
@@ -89,7 +107,8 @@ std::unique_ptr<ITool> Panel::GetState(const enum Action &action)
     {
         m_dragMode = !m_dragMode;
 
-        if (m_dragMode)
+        if (m_dragMode && action != Action::LoadLastShapesBin &&
+            action != Action::LoadLastShapesTxt)
         {
             return std::make_unique<DragState>(GetPanelSize());
         }
@@ -147,6 +166,18 @@ std::unique_ptr<ITool> Panel::GetState(const enum Action &action)
 
     case Action::AddTriangle:
         return std::make_unique<AddShapeState>(SHAPES_TYPE::TRIANGLE_T, GetPanelSize());
+
+    case Action::LoadLastShapesBin:
+        return std::make_unique<LoadBinState>();
+
+    case Action::LoadLastShapesTxt:
+        return std::make_unique<LoadTxtState>();
+
+    case Action::SaveShapesBin:
+        return std::make_unique<SaveBinState>();
+
+    case Action::SaveShapesTxt:
+        return std::make_unique<SaveTxtState>();
 
     default:
         return nullptr;

@@ -22,10 +22,9 @@ void ChangeColorCommandFill::Execute()
 
 void ChangeColorCommandFill::Undo()
 {
-    ColorChangeVisitor visitor(m_before[0][0].GetFillColor());
-
-    for (auto &s : m_shapes)
+    for (size_t i = 0; i < m_shapes.size(); i++)
     {
-        s->Accept(visitor);
+        ColorChangeVisitor visitor(m_before[i][0].GetFillColor());
+        m_shapes[i]->Accept(visitor);
     }
 }

@@ -9,13 +9,16 @@ std::shared_ptr<IDrawableShape> ShapeFactory::CreateShape(
     {
     case SHAPES_TYPE::RECTANGLE_T:
         return CreateRectangle(Point(params[0], params[1]), params[2], params[3]);
+
     case SHAPES_TYPE::TRIANGLE_T:
         return CreateTriangle(
             Point(params[0], params[1]),
             Point(params[2], params[3]),
             Point(params[4], params[5]));
+
     case SHAPES_TYPE::CIRCLE_T:
         return CreateCircle(Point(params[0], params[1]), params[2]);
+
     default:
         return nullptr;
     }

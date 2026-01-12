@@ -32,9 +32,23 @@ add_executable(GeometryEditor
     src/ShapeMemento.cpp
     src/ThicknessChangeVisitor.cpp
     src/UngroupShapesCommand.cpp
+    src/BinaryShapeLoader.cpp
+    src/BinaryShapeStrategy.cpp
+    src/LoadBinState.cpp
+    src/LoadCommand.cpp
+    src/LoadTxtState.cpp
+    src/ShapeBuilder.cpp
+    src/ShapeLoader.cpp
+    src/TxtShapeLoader.cpp
+    src/TxtShapeStrategy.cpp
+    src/SaveBinState.cpp
+    src/SaveTxtState.cpp
 
 )
 configure_file(${CMAKE_SOURCE_DIR}/include/arialmt.ttf ${CMAKE_CURRENT_BINARY_DIR}/arialmt.ttf COPYONLY)
+configure_file(${CMAKE_SOURCE_DIR}/shapes.bin ${CMAKE_SOURCE_DIR}/shapes.bin COPYONLY)
+configure_file(${CMAKE_SOURCE_DIR}/shapes.txt ${CMAKE_SOURCE_DIR}/shapes.txt COPYONLY)
+
 target_compile_definitions(GeometryEditor PRIVATE SFML_STATIC)
 
 target_include_directories(GeometryEditor PRIVATE 

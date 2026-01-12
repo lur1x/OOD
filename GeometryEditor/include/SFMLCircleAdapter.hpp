@@ -31,6 +31,9 @@ public:
 
     size_t GetStateSize() const override;
 
+    void SerializeToBinary(std::ostream &out) const override;
+    void SerializeToText(std::ostream &out) const override;
+
 private:
     std::shared_ptr<sf::CircleShape> m_circle;
     Point m_center;

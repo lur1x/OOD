@@ -86,3 +86,44 @@ size_t SFMLCircleAdapter::GetStateSize() const
 {
     return 1;
 }
+
+void SFMLCircleAdapter::SerializeToBinary(std::ostream &out) const
+{
+    const auto shape = m_circle;
+    SHAPES_TYPE type = SHAPES_TYPE::CIRCLE_T;
+    out.write(reinterpret_cast<const char *>(&type), sizeof(type));
+
+    sf::Vector2f pos = shape->getPosition();
+    out.write(reinterpret_cast<const char *>(&pos.x), sizeof(pos.x));
+    out.write(reinterpret_cast<const char *>(&pos.y), sizeof(pos.y));
+
+    float centerX = m_center.GetX();
+    float centerY = m_center.GetY();
+    out.write(reinterpret_cast<const char *>(&centerX), sizeof(centerX));
+    out.write(reinterpret_cast<const char *>(&centerY), sizeof(centerY));
+
+    out.write(reinterpret_cast<const char *>(&m_radius), sizeof(m_radius));
+
+    uint32_t color = shape->getOutlineColor().toInteger();
+    out.write(reinterpret_cast<const char *>(&color), sizeof(color));
+
+    float thickness = shape->getOutlineThickness();
+    out.write(reinterpret_cast<const char *>(&thickness), sizeof(thickness));
+
+    uint32_t colorFill = shape->getFillColor().toInteger();
+    out.write(reinterpret_cast<const char *>(&colorFill), sizeof(colorFill));
+}
+
+void SFMLCircleAdapter::SerializeToText(std::ostream &out) const
+{
+    const auto shape = m_circle;
+    out << input::CIRCLE << ' ';
+
+    sf::Vector2f pos = shape->getPosition();
+    out << pos.x << ' ' << pos.y << ' ' << m_center.GetX() << ' ' << m_center.GetY() << ' ' << m_radius << ' ';
+
+    uint32_t color = shape->getOutlineColor().toInteger();
+    float thickness = shape->getOutlineThickness();
+    uint32_t colorFill = shape->getFillColor().toInteger();
+    out << color << ' ' << thickness << ' ' << colorFill << '\n';
+}

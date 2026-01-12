@@ -82,12 +82,15 @@ bool Canvas::HandleEvents()
         m_panel.HandleMouseEvent(*event);
 
         UndoState();
+        SaveState();
 
         if (m_tool)
         {
             m_tool->HandleEvent(this);
 
-            if (!m_panel.IsDragMode())
+            bool isPersistentTool = dynamic_cast<DragState *>(m_tool.get()) != nullptr;
+
+            if (!m_panel.IsDragMode() && !isPersistentTool)
             {
                 SetTool(nullptr);
             }
@@ -110,6 +113,28 @@ void Canvas::UndoState()
 
             ClearSelected();
             cmd->Undo();
+        }
+    }
+}
+
+void Canvas::SaveState()
+{
+    if (auto event = GetEvent(); event.has_value())
+    {
+        sf::Event ev = event.value();
+
+        if (auto keyPress = ev.getIf<sf::Event::KeyPressed>() && sf::Keyboard::isKeyPressed(sf::Keyboard::Key::LControl) && sf::Keyboard::isKeyPressed(sf::Keyboard::Key::S))
+        {
+            if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::B))
+            {
+                BinaryShapeStrategy s;
+                SaveToFile(input::BIN_FILENAME, s);
+            }
+            else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::T))
+            {
+                TxtShapeStrategy s;
+                SaveToFile(input::TEXT_FILENAME, s);
+            }
         }
     }
 }
@@ -268,6 +293,7 @@ std::shared_ptr<CompositeShape> Canvas::GroupShapes(const std::vector<std::share
     for (const auto &s : shapes)
     {
         group->Add(s);
+        s->SetInGroup(true);
     }
 
     m_shapes.push_back(group);
@@ -326,6 +352,17 @@ sf::Vector2f Canvas::GetLastMousePos() const
     return m_lastMousePos;
 }
 
+void Canvas::ClearCanvas()
+{
+    m_selected.clear();
+    m_shapes.clear();
+}
+
+std::vector<std::shared_ptr<IDrawableShape>> Canvas::GetShapes() const
+{
+    return m_shapes;
+}
+
 void Canvas::GroupSelected()
 {
     auto group = std::make_shared<CompositeShape>();
@@ -333,6 +370,7 @@ void Canvas::GroupSelected()
     for (const auto &s : m_selected)
     {
         group->Add(s);
+        s->SetInGroup(true);
     }
 
     m_shapes.push_back(group);
@@ -354,6 +392,7 @@ void Canvas::UngroupSelected()
             for (auto &child : g->GetShapes())
             {
                 toAdd.push_back(child);
+                child->SetInGroup(false);
             }
 
             m_shapes.erase(std::remove(m_shapes.begin(), m_shapes.end(), s), m_shapes.end());
@@ -377,6 +416,7 @@ void Canvas::UngroupShapes(const std::vector<std::shared_ptr<IDrawableShape>> &s
             for (auto &child : g->GetShapes())
             {
                 toAdd.push_back(child);
+                child->SetInGroup(false);
             }
 
             m_shapes.erase(std::remove(m_shapes.begin(), m_shapes.end(), s), m_shapes.end());
@@ -395,4 +435,9 @@ std::optional<sf::Event> Canvas::GetEvent() const
 void Canvas::SetEvent(const sf::Event &event)
 {
     m_event = event;
+}
+
+void Canvas::SaveToFile(const std::string &filename, IShapeStrategy &serializer)
+{
+    serializer.Save(m_shapes, filename);
 }

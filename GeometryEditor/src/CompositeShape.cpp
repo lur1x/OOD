@@ -190,3 +190,30 @@ size_t CompositeShape::GetStateSize() const
     }
     return sum;
 }
+
+void CompositeShape::SerializeToBinary(std::ostream &out) const
+{
+    auto shapes = GetShapes();
+
+    SHAPES_TYPE type = SHAPES_TYPE::COMPOSITE_T;
+    out.write(reinterpret_cast<const char *>(&type), sizeof(type));
+
+    uint32_t count = static_cast<uint32_t>(shapes.size());
+    out.write(reinterpret_cast<const char *>(&count), sizeof(count));
+
+    for (auto &s : shapes)
+    {
+        s->SerializeToBinary(out);
+    }
+}
+
+void CompositeShape::SerializeToText(std::ostream &out) const
+{
+    auto shapes = GetShapes();
+    out << input::COMPOSITE << ' ' << shapes.size() << ' ';
+
+    for (auto &s : shapes)
+    {
+        s->SerializeToText(out);
+    }
+}

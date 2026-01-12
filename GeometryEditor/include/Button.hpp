@@ -20,6 +20,9 @@ public:
 
     Action GetAction() const;
 
+    sf::Vector2f GetPosition() const { return m_shape.getPosition(); }
+    sf::Vector2f GetSize() const { return m_shape.getSize(); }
+
 private:
     sf::RectangleShape m_shape;
     sf::Text m_text;
