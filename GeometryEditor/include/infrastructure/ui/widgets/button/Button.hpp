@@ -1,0 +1,30 @@
+#pragma once
+
+#include <SFML/Graphics.hpp>
+
+#include <functional>
+
+#include "../../../../core/constants/Constants.hpp"
+
+class Button
+{
+public:
+    Button(const sf::Vector2f &pos, const sf::Vector2f &size, const sf::String &textString, const sf::Font &font, const Action &action);
+
+    std::function<void()> onClick;
+
+    void Draw(sf::RenderWindow &window) const;
+
+    bool IsMouseOver(const sf::RenderWindow &window) const;
+    bool IsClicked(const sf::RenderWindow &window, const sf::Event &event) const;
+
+    Action GetAction() const;
+
+    sf::Vector2f GetPosition() const { return m_shape.getPosition(); }
+    sf::Vector2f GetSize() const { return m_shape.getSize(); }
+
+private:
+    sf::RectangleShape m_shape;
+    sf::Text m_text;
+    Action m_action;
+};
